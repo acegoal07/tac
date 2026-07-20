@@ -1,0 +1,27 @@
+{
+   "name": "kind-of-a-cluster",
+   "version": "1.0.0",
+   "description": "",
+   "homepage": "https://github.com/acegoal07/Kind-of-a-Cluster#readme",
+   "bugs": {
+      "url": "https://github.com/acegoal07/Kind-of-a-Cluster/issues"
+   },
+   "repository": {
+      "type": "git",
+      "url": "git+https://github.com/acegoal07/Kind-of-a-Cluster.git"
+   },
+   "license": "MIT",
+   "author": "acegoal07",
+   "type": "commonjs",
+   "main": "app.js",
+   "scripts": {
+      "format": "prettier . --write",
+      "format:check": "prettier . --check"
+   },
+   "devDependencies": {
+      "@eslint/js": "^10.0.1",
+      "eslint-config-prettier": "^10.1.8",
+      "globals": "^17.6.0",
+      "prettier": "^3.8.4"
+   }
+}
