@@ -3,18 +3,21 @@ kind-of-a-cluster
 
 A new CLI generated with oclif
 
-
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/kind-of-a-cluster.svg)](https://npmjs.org/package/kind-of-a-cluster)
 [![Downloads/week](https://img.shields.io/npm/dw/kind-of-a-cluster.svg)](https://npmjs.org/package/kind-of-a-cluster)
 
-
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
+
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g kind-of-a-cluster
 $ kind-of-a-cluster COMMAND
@@ -26,23 +29,27 @@ USAGE
   $ kind-of-a-cluster COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`kind-of-a-cluster create [FILE]`](#kind-of-a-cluster-create-file)
-* [`kind-of-a-cluster destroy NAME`](#kind-of-a-cluster-destroy-name)
-* [`kind-of-a-cluster destroy all`](#kind-of-a-cluster-destroy-all)
-* [`kind-of-a-cluster help [COMMAND]`](#kind-of-a-cluster-help-command)
-* [`kind-of-a-cluster plugins`](#kind-of-a-cluster-plugins)
-* [`kind-of-a-cluster plugins add PLUGIN`](#kind-of-a-cluster-plugins-add-plugin)
-* [`kind-of-a-cluster plugins:inspect PLUGIN...`](#kind-of-a-cluster-pluginsinspect-plugin)
-* [`kind-of-a-cluster plugins install PLUGIN`](#kind-of-a-cluster-plugins-install-plugin)
-* [`kind-of-a-cluster plugins link PATH`](#kind-of-a-cluster-plugins-link-path)
-* [`kind-of-a-cluster plugins remove [PLUGIN]`](#kind-of-a-cluster-plugins-remove-plugin)
-* [`kind-of-a-cluster plugins reset`](#kind-of-a-cluster-plugins-reset)
-* [`kind-of-a-cluster plugins uninstall [PLUGIN]`](#kind-of-a-cluster-plugins-uninstall-plugin)
-* [`kind-of-a-cluster plugins unlink [PLUGIN]`](#kind-of-a-cluster-plugins-unlink-plugin)
-* [`kind-of-a-cluster plugins update`](#kind-of-a-cluster-plugins-update)
+
+- [`kind-of-a-cluster create [FILE]`](#kind-of-a-cluster-create-file)
+- [`kind-of-a-cluster destroy NAME`](#kind-of-a-cluster-destroy-name)
+- [`kind-of-a-cluster destroy all`](#kind-of-a-cluster-destroy-all)
+- [`kind-of-a-cluster help [COMMAND]`](#kind-of-a-cluster-help-command)
+- [`kind-of-a-cluster plugins`](#kind-of-a-cluster-plugins)
+- [`kind-of-a-cluster plugins add PLUGIN`](#kind-of-a-cluster-plugins-add-plugin)
+- [`kind-of-a-cluster plugins:inspect PLUGIN...`](#kind-of-a-cluster-pluginsinspect-plugin)
+- [`kind-of-a-cluster plugins install PLUGIN`](#kind-of-a-cluster-plugins-install-plugin)
+- [`kind-of-a-cluster plugins link PATH`](#kind-of-a-cluster-plugins-link-path)
+- [`kind-of-a-cluster plugins remove [PLUGIN]`](#kind-of-a-cluster-plugins-remove-plugin)
+- [`kind-of-a-cluster plugins reset`](#kind-of-a-cluster-plugins-reset)
+- [`kind-of-a-cluster plugins uninstall [PLUGIN]`](#kind-of-a-cluster-plugins-uninstall-plugin)
+- [`kind-of-a-cluster plugins unlink [PLUGIN]`](#kind-of-a-cluster-plugins-unlink-plugin)
+- [`kind-of-a-cluster plugins update`](#kind-of-a-cluster-plugins-update)
 
 ## `kind-of-a-cluster create [FILE]`
 

@@ -1,70 +1,76 @@
 {
-  "name": "kind-of-a-cluster",
-  "description": "A new CLI generated with oclif",
-  "version": "0.0.0",
-  "author": "acegoal07",
-  "bin": {
-    "kind-of-a-cluster": "./bin/run.js"
-  },
-  "bugs": "https://github.com/Kind-of-a-Cluster-V2/kind-of-a-cluster/issues",
-  "dependencies": {
-    "@oclif/core": "^4",
-    "@oclif/plugin-help": "^6",
-    "@oclif/plugin-plugins": "^5",
-    "docker-compose": "^1.4.2",
-    "eta": "^4.6.0",
-    "ora": "^9.4.1",
-    "ssh2": "^1.17.0"
-  },
-  "devDependencies": {
-    "@eslint/compat": "^1",
-    "@oclif/prettier-config": "^0.2.1",
-    "@types/ssh2": "^1.15.5",
-    "eslint": "^9",
-    "eslint-config-oclif": "^6",
-    "eslint-config-prettier": "^10",
-    "oclif": "^4",
-    "shx": "^0.3.3",
-    "ts-node": "^10",
-    "typescript": "^5"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "files": [
-    "./bin",
-    "./dist",
-    "./oclif.manifest.json"
-  ],
-  "homepage": "https://github.com/Kind-of-a-Cluster-V2/kind-of-a-cluster",
-  "keywords": [
-    "oclif"
-  ],
-  "license": "MIT",
-  "main": "dist/index.js",
-  "oclif": {
-    "bin": "kind-of-a-cluster",
-    "dirname": "kind-of-a-cluster",
-    "commands": "./dist/commands",
-    "plugins": [
-      "@oclif/plugin-help",
-      "@oclif/plugin-plugins"
-    ],
-    "topicSeparator": " ",
-    "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
+   "name": "kind-of-a-cluster",
+   "description": "A new CLI generated with oclif",
+   "version": "0.0.1",
+   "author": "acegoal07",
+   "bin": {
+      "kind-of-a-cluster": "./bin/run.js"
+   },
+   "bugs": "https://github.com/Kind-of-a-Cluster-V2/kind-of-a-cluster/issues",
+   "dependencies": {
+      "@oclif/core": "^4",
+      "@oclif/plugin-help": "^6",
+      "docker-compose": "^1.4.2",
+      "eta": "^4.6.0",
+      "ora": "^9.4.1",
+      "ssh2": "^1.17.0"
+   },
+   "devDependencies": {
+      "@eslint/compat": "^1",
+      "@types/ssh2": "^1.15.5",
+      "eslint": "^9",
+      "eslint-config-oclif": "^6",
+      "eslint-config-prettier": "^10",
+      "oclif": "^4",
+      "prettier": "^3.9.6",
+      "shx": "^0.3.3",
+      "ts-node": "^10",
+      "typescript": "^5"
+   },
+   "engines": {
+      "node": ">=18.0.0"
+   },
+   "files": [
+      "./bin",
+      "./dist",
+      "./oclif.manifest.json"
+   ],
+   "homepage": "https://github.com/Kind-of-a-Cluster-V2/kind-of-a-cluster",
+   "keywords": [
+      "oclif"
+   ],
+   "license": "MIT",
+   "main": "dist/index.js",
+   "oclif": {
+      "bin": "kind-of-a-cluster",
+      "dirname": "kind-of-a-cluster",
+      "commands": "./dist/commands",
+      "plugins": [
+         "@oclif/plugin-help"
+      ],
+      "topicSeparator": " ",
+      "topics": {
+         "hello": {
+            "description": "Say hello to the world and others"
+         }
       }
-    }
-  },
-  "repository": "Kind-of-a-Cluster-V2/kind-of-a-cluster",
-  "scripts": {
-    "build": "shx rm -rf dist && tsc -b && shx mkdir -p dist/assets && shx cp -r src/assets/setup_scripts dist/assets/ && shx cp -r src/assets/templates dist/assets/ && shx cp -r src/assets/docker dist/assets/",
-    "lint": "eslint",
-    "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "npm run lint",
-    "prepack": "oclif manifest && oclif readme",
-    "version": "oclif readme && git add README.md"
-  },
-  "types": "dist/index.d.ts"
+   },
+   "repository": "Kind-of-a-Cluster-V2/kind-of-a-cluster",
+   "scripts": {
+      "build": "shx rm -rf dist && tsc -b && shx mkdir -p dist/assets && shx cp -r src/assets/setup_scripts dist/assets/ && shx cp -r src/assets/templates dist/assets/ && shx cp -r src/assets/docker dist/assets/",
+      "lint": "eslint",
+      "format": "npx prettier . --write",
+      "postpack": "shx rm -f oclif.manifest.json",
+      "posttest": "npm run lint",
+      "prepack": "oclif manifest && oclif readme",
+      "version": "oclif readme && git add README.md"
+   },
+   "types": "dist/index.d.ts",
+   "prettier": {
+      "semi": true,
+      "singleQuote": true,
+      "trailingComma": "none",
+      "printWidth": 100,
+      "tabWidth": 3
+   }
 }
