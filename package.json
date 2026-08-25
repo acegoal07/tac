@@ -14,21 +14,15 @@
     "docker-compose": "^1.4.2",
     "eta": "^4.6.0",
     "ora": "^9.4.1",
-    "ssh-keygen": "^0.5.0",
     "ssh2": "^1.17.0"
   },
   "devDependencies": {
     "@eslint/compat": "^1",
     "@oclif/prettier-config": "^0.2.1",
-    "@oclif/test": "^4",
-    "@types/chai": "^4",
-    "@types/mocha": "^10",
     "@types/ssh2": "^1.15.5",
-    "chai": "^4",
     "eslint": "^9",
     "eslint-config-oclif": "^6",
     "eslint-config-prettier": "^10",
-    "mocha": "^11",
     "oclif": "^4",
     "shx": "^0.3.3",
     "ts-node": "^10",
@@ -70,7 +64,6 @@
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
     "prepack": "oclif manifest && oclif readme",
-    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif readme && git add README.md"
   },
   "types": "dist/index.d.ts"
