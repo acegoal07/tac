@@ -1,12 +1,12 @@
 {
-   "name": "kind-of-a-cluster",
-   "description": "A new CLI generated with oclif",
+   "name": "@acegoal07/tac",
+   "description": "A cli tool to create what is technical a cluster using docker",
    "version": "0.0.1",
    "author": "acegoal07",
    "bin": {
-      "kind-of-a-cluster": "./bin/run.js"
+      "tac": "./bin/run.js"
    },
-   "bugs": "https://github.com/Kind-of-a-Cluster-V2/kind-of-a-cluster/issues",
+   "bugs": "https://github.com/acegoal07/tac/issues",
    "dependencies": {
       "@oclif/core": "^4",
       "@oclif/plugin-help": "^6",
@@ -35,15 +35,15 @@
       "./dist",
       "./oclif.manifest.json"
    ],
-   "homepage": "https://github.com/Kind-of-a-Cluster-V2/kind-of-a-cluster",
+   "homepage": "https://github.com/acegoal07/tac",
    "keywords": [
       "oclif"
    ],
    "license": "MIT",
    "main": "dist/index.js",
    "oclif": {
-      "bin": "kind-of-a-cluster",
-      "dirname": "kind-of-a-cluster",
+      "bin": "tac",
+      "dirname": "tac",
       "commands": "./dist/commands",
       "plugins": [
          "@oclif/plugin-help"
@@ -55,7 +55,7 @@
          }
       }
    },
-   "repository": "Kind-of-a-Cluster-V2/kind-of-a-cluster",
+   "repository": "acegoal07/tac",
    "scripts": {
       "build": "shx rm -rf dist && tsc -b && shx mkdir -p dist/assets && shx cp -r src/assets/setup_scripts dist/assets/ && shx cp -r src/assets/templates dist/assets/ && shx cp -r src/assets/docker dist/assets/",
       "lint": "eslint",
