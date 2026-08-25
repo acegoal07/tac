@@ -1,0 +1,85 @@
+name: <%= it.name %>
+
+services:
+   login:
+      build: .
+      image: generic-node
+      container_name: <%= it.name %>-login
+      hostname: login
+      ports:
+         - "2222:22"
+      environment:
+         ROLE: login
+         MODULE_FRAMEWORK: <%= it.module %>
+
+      volumes:
+         - home:/home/dev
+         - ./cluster_key:/home/dev/.ssh/id_ed25519:ro
+         - ./authorized_keys:/home/dev/.ssh/authorized_keys:ro
+         - ./known_hosts:/home/dev/.ssh/known_hosts:ro
+         - ./hostkeys/login_ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key:ro
+         - ./hostkeys/login_ssh_host_ed25519_key.pub:/etc/ssh/ssh_host_ed25519_key.pub:ro
+         - ./munge.key:/tmp/munge.key:ro
+         - ./conf/slurm.conf:/tmp/conf/slurm.conf:ro
+         - ./conf/slurmdbd.conf:/tmp/conf/slurmdbd.conf:ro
+<% if (it.module === "em") { %>
+         - ./setup_scripts/environment_modules.sh:/tmp/setup_scripts/environment-modules.sh:ro
+<% } %>
+<% if (it.module === "lmod") { %>
+         - ./setup_scripts/lmod.sh:/tmp/setup_scripts/lmod.sh:ro
+<% } %>
+      networks:
+         - cluster
+<% for (let i = 1; i <= it.count; i++) { %>
+   node<%= String(i).padStart(2, "0") %>:
+      image: generic-node
+      container_name: <%= it.name %>-node<%= String(i).padStart(2, "0") %>
+
+      hostname: node<%= String(i).padStart(2, "0") %>
+
+      mem_limit: <%= it.memory %>m
+
+      environment:
+         ROLE: compute
+         MODULE_FRAMEWORK: <%= it.module %>
+
+      volumes:
+         - home:/home/dev
+         - ./authorized_keys:/home/dev/.ssh/authorized_keys:ro
+         - ./known_hosts:/home/dev/.ssh/known_hosts:ro
+         - ./hostkeys/node<%= String(i).padStart(2, "0") %>_ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key:ro
+         - ./hostkeys/node<%= String(i).padStart(2, "0") %>_ssh_host_ed25519_key.pub:/etc/ssh/ssh_host_ed25519_key.pub:ro
+         - ./munge.key:/tmp/munge.key:ro
+         - ./conf/slurm.conf:/tmp/conf/slurm.conf:ro
+<% if (it.module === "em") { %>
+         - ./setup_scripts/environment_modules.sh:/tmp/setup_scripts/environment_modules.sh:ro
+<% } %>
+<% if (it.module === "lmod") { %>
+         - ./setup_scripts/lmod.sh:/tmp/setup_scripts/lmod.sh:ro
+<% } %>
+      networks:
+         - cluster   
+<% } %>
+
+   database:
+      image: generic-node
+      container_name: <%= it.name %>-database
+      hostname: database
+      environment:
+         ROLE: database
+         MODULE_FRAMEWORK: <%= it.module %>
+
+      volumes:
+         - ./conf:/tmp/conf:ro
+         - ./munge.key:/tmp/munge.key:ro
+         - ./setup_scripts/database.sh:/tmp/setup_scripts/database.sh:ro
+         
+      networks:
+         - cluster
+
+volumes:
+   home:
+
+networks:
+   cluster:
+      driver: bridge
