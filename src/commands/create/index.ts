@@ -2,11 +2,10 @@ import { Command, Flags } from '@oclif/core';
 import { upAll } from 'docker-compose';
 import { Eta } from 'eta';
 import { randomBytes } from 'node:crypto';
-import { appendFileSync, chmodSync, copyFileSync, cpSync, mkdirSync, writeFileSync } from 'node:fs';
+import { appendFileSync, copyFileSync, cpSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import ora from 'ora';
-import { utils } from 'ssh2';
-import { createNodeName } from '../../assets/lib/util';
+import { createKeyPair, createNodeName } from '../../assets/lib/util';
 import { pathToCLIAssets, pathToCluster } from '../../assets/lib/paths';
 
 export default class CreateIndex extends Command {
@@ -46,59 +45,31 @@ export default class CreateIndex extends Command {
       const { flags } = await this.parse(CreateIndex);
       const clusterPath = pathToCluster(__dirname, flags.name);
 
+      // Make required directories
       mkdirSync(clusterPath, { recursive: true });
+      mkdirSync(join(clusterPath, 'hostkeys'), { recursive: true });
+      mkdirSync(join(clusterPath, 'conf'), { recursive: true });
 
       let spinner = ora('Generating cluster key').start();
 
-      const clusterKey = utils.generateKeyPairSync('ed25519');
-      writeFileSync(join(clusterPath, 'cluster_key.pub'), clusterKey.public);
-      writeFileSync(join(clusterPath, 'cluster_key'), clusterKey.private);
-      chmodSync(join(clusterPath, 'cluster_key'), 0o600);
-      writeFileSync(join(clusterPath, 'authorized_keys'), `${clusterKey.public}\n`);
+      createKeyPair(join(clusterPath, 'authorized_keys'), join(clusterPath, 'cluster_key'));
 
       spinner.succeed('Generated cluster key');
       spinner = ora('Generating login key').start();
 
-      mkdirSync(join(clusterPath, 'hostkeys'), { recursive: true });
-
-      const loginKey = utils.generateKeyPairSync('ed25519');
-
-      writeFileSync(
-         join(clusterPath, 'hostkeys', 'login_ssh_host_ed25519_key.pub'),
-         loginKey.public
+      createKeyPair(
+         join(clusterPath, 'authorized_keys'),
+         join(clusterPath, 'hostkeys', 'login_ssh_host_ed25519_key')
       );
-
-      writeFileSync(join(clusterPath, 'hostkeys', 'login_ssh_host_ed25519_key'), loginKey.private);
-
-      chmodSync(join(clusterPath, 'hostkeys', 'login_ssh_host_ed25519_key'), 0o600);
-
-      appendFileSync(join(clusterPath, 'authorized_keys'), `${loginKey.public}\n`);
 
       spinner.succeed('Generated login key');
       spinner = ora('Generating host keys').start();
 
       for (let i = 1; i <= flags.count; i++) {
-         const keys = utils.generateKeyPairSync('ed25519');
-
-         writeFileSync(
-            join(clusterPath, 'hostkeys', `${createNodeName(i)}_ssh_host_ed25519_key`),
-            keys.private
+         createKeyPair(
+            join(clusterPath, 'authorized_keys'),
+            join(clusterPath, 'hostkeys', `${createNodeName(i)}_ssh_host_ed25519_key`)
          );
-
-         chmodSync(
-            join(clusterPath, 'hostkeys', `${createNodeName(i)}_ssh_host_ed25519_key`),
-            0o600
-         );
-
-         writeFileSync(
-            join(clusterPath, 'hostkeys', `${createNodeName(i)}_ssh_host_ed25519_key.pub`),
-            keys.public
-         );
-
-         appendFileSync(join(clusterPath, 'authorized_keys'), `${keys.public}\n`);
-
-         chmodSync(join(clusterPath, 'authorized_keys'), 0o600);
-
          appendFileSync(join(clusterPath, 'known_hosts'), `${createNodeName(i)}\n`);
       }
 
@@ -132,10 +103,7 @@ export default class CreateIndex extends Command {
       spinner.succeed('Copied docker files');
       spinner = ora('Generating slurm configs').start();
 
-      mkdirSync(join(clusterPath, 'conf'), { recursive: true });
-
       writeFileSync(join(clusterPath, 'conf', 'slurm.conf'), eta.render('slurmconf', flags));
-
       writeFileSync(join(clusterPath, 'conf', 'slurmdbd.conf'), eta.render('slurmdbd', flags));
 
       spinner.succeed('Generated slurm config');
