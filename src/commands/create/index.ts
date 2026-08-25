@@ -6,10 +6,17 @@ import { appendFileSync, chmodSync, copyFileSync, cpSync, mkdirSync, writeFileSy
 import { join } from 'node:path';
 import ora from 'ora';
 import { utils } from 'ssh2';
+import { createNodeName } from '../../assets/lib/util';
+import { pathToCLIAssets, pathToCluster } from '../../assets/lib/paths';
 
 export default class CreateIndex extends Command {
    static override readonly description = 'describe the command here';
    static override readonly flags = {
+      database: Flags.boolean({
+         char: 'd',
+         default: true,
+         description: 'Whether or not a database should be setup for the cluster'
+      }),
       count: Flags.integer({
          char: 'c',
          default: 1,
@@ -23,7 +30,7 @@ export default class CreateIndex extends Command {
          min: 1024
       }),
       module: Flags.string({
-         char: 'N',
+         char: 'M',
          default: 'lmod',
          description: 'The module loader type to use in the cluster'
       }),
@@ -37,7 +44,7 @@ export default class CreateIndex extends Command {
 
    public async run(): Promise<void> {
       const { flags } = await this.parse(CreateIndex);
-      const clusterPath = join(__dirname, '..', '..', 'clusters', flags.name);
+      const clusterPath = pathToCluster(__dirname, flags.name);
 
       mkdirSync(clusterPath, { recursive: true });
 
@@ -55,12 +62,16 @@ export default class CreateIndex extends Command {
       mkdirSync(join(clusterPath, 'hostkeys'), { recursive: true });
 
       const loginKey = utils.generateKeyPairSync('ed25519');
+
       writeFileSync(
          join(clusterPath, 'hostkeys', 'login_ssh_host_ed25519_key.pub'),
          loginKey.public
       );
+
       writeFileSync(join(clusterPath, 'hostkeys', 'login_ssh_host_ed25519_key'), loginKey.private);
+
       chmodSync(join(clusterPath, 'hostkeys', 'login_ssh_host_ed25519_key'), 0o600);
+
       appendFileSync(join(clusterPath, 'authorized_keys'), `${loginKey.public}\n`);
 
       spinner.succeed('Generated login key');
@@ -68,31 +79,33 @@ export default class CreateIndex extends Command {
 
       for (let i = 1; i <= flags.count; i++) {
          const keys = utils.generateKeyPairSync('ed25519');
+
          writeFileSync(
-            join(clusterPath, 'hostkeys', `node${String(i).padStart(2, '0')}_ssh_host_ed25519_key`),
+            join(clusterPath, 'hostkeys', `${createNodeName(i)}_ssh_host_ed25519_key`),
             keys.private
          );
+
          chmodSync(
-            join(clusterPath, 'hostkeys', `node${String(i).padStart(2, '0')}_ssh_host_ed25519_key`),
+            join(clusterPath, 'hostkeys', `${createNodeName(i)}_ssh_host_ed25519_key`),
             0o600
          );
+
          writeFileSync(
-            join(
-               clusterPath,
-               'hostkeys',
-               `node${String(i).padStart(2, '0')}_ssh_host_ed25519_key.pub`
-            ),
+            join(clusterPath, 'hostkeys', `${createNodeName(i)}_ssh_host_ed25519_key.pub`),
             keys.public
          );
+
          appendFileSync(join(clusterPath, 'authorized_keys'), `${keys.public}\n`);
+
          chmodSync(join(clusterPath, 'authorized_keys'), 0o600);
-         appendFileSync(join(clusterPath, 'known_hosts'), `node${String(i).padStart(2, '0')}\n`);
+
+         appendFileSync(join(clusterPath, 'known_hosts'), `${createNodeName(i)}\n`);
       }
 
       spinner.succeed('Generated host keys');
 
       const eta = new Eta({
-         views: join(__dirname, '..', '..', 'assets', 'templates')
+         views: pathToCLIAssets(__dirname, 'templates')
       });
 
       spinner = ora('Generating compose file').start();
@@ -103,18 +116,18 @@ export default class CreateIndex extends Command {
       spinner = ora('Copying docker files').start();
 
       copyFileSync(
-         join(__dirname, '..', '..', 'assets', 'docker', 'Dockerfile'),
+         pathToCLIAssets(__dirname, 'docker', 'Dockerfile'),
          join(clusterPath, 'Dockerfile')
       );
+
       copyFileSync(
-         join(__dirname, '..', '..', 'assets', 'docker', 'entrypoint.sh'),
+         pathToCLIAssets(__dirname, 'docker', 'entrypoint.sh'),
          join(clusterPath, 'entrypoint.sh')
       );
-      cpSync(
-         join(__dirname, '..', '..', 'assets', 'setup_scripts'),
-         join(clusterPath, 'setup_scripts'),
-         { recursive: true }
-      );
+
+      cpSync(pathToCLIAssets(__dirname, 'setup_scripts'), join(clusterPath, 'setup_scripts'), {
+         recursive: true
+      });
 
       spinner.succeed('Copied docker files');
       spinner = ora('Generating slurm configs').start();
@@ -131,6 +144,10 @@ export default class CreateIndex extends Command {
       writeFileSync(join(clusterPath, 'munge.key'), randomBytes(256));
 
       spinner.succeed('Copied docker files');
+      spinner = ora('Initialising docker compose').start();
+
       await upAll({ cwd: clusterPath }).catch((error) => console.log(error));
+
+      spinner.succeed('Initialised docker compose');
    }
 }

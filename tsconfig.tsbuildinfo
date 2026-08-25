@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/commands/create/index.ts","./src/commands/destroy/all.ts","./src/commands/destroy/index.ts"],"version":"5.9.3"}
+{"root":["./src/index.ts","./src/assets/lib/paths.ts","./src/assets/lib/util.ts","./src/commands/create/index.ts","./src/commands/destroy/all.ts","./src/commands/destroy/index.ts"],"version":"5.9.3"}
