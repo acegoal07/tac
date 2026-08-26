@@ -1,5 +1,6 @@
 {
    "compilerOptions": {
+      "forceConsistentCasingInFileNames": true,
       "declaration": true,
       "module": "NodeNext",
       "moduleResolution": "NodeNext",
