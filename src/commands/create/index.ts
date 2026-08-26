@@ -5,22 +5,23 @@ import { randomBytes } from 'node:crypto';
 import { appendFileSync, copyFileSync, cpSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import ora from 'ora';
-import { createKeyPair, createNodeName } from '../../assets/lib/util';
+
 import { pathToCLIAssets, pathToCluster } from '../../assets/lib/paths';
+import { createKeyPair, createNodeName } from '../../assets/lib/util';
 
 export default class CreateIndex extends Command {
    static override readonly description = 'describe the command here';
    static override readonly flags = {
-      database: Flags.boolean({
-         char: 'd',
-         default: true,
-         description: 'Whether or not a database should be setup for the cluster'
-      }),
       count: Flags.integer({
          char: 'c',
          default: 1,
          description: 'How many nodes to give to the cluster',
          min: 1
+      }),
+      database: Flags.boolean({
+         char: 'd',
+         default: true,
+         description: 'Whether or not a database should be setup for the cluster'
       }),
       memory: Flags.integer({
          char: 'm',
