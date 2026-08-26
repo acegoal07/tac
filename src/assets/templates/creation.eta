@@ -38,6 +38,8 @@ services:
 
       mem_limit: <%= it.memory %>m
 
+      cpus: 4
+
       environment:
          ROLE: compute
          MODULE_FRAMEWORK: <%= it.module %>

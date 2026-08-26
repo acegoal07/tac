@@ -1,12 +1,15 @@
 {
    "name": "@acegoal07/tac",
    "version": "0.0.1",
-   "description": "A CLI tool to create a technical cluster using Docker",
+   "description": "A CLI tool for creating, accessing and managing docker based clusters",
    "author": "acegoal07",
    "license": "MIT",
    "repository": "acegoal07/tac",
    "homepage": "https://github.com/acegoal07/tac",
    "bugs": "https://github.com/acegoal07/tac/issues",
+   "publishConfig": {
+      "access": "public"
+   },
    "keywords": [
       "cli",
       "docker",
@@ -38,14 +41,15 @@
       "ssh2": "^1.17.0"
    },
    "devDependencies": {
+      "@eslint/config-helpers": "^0.7.0",
       "@types/ssh2": "^1.15.5",
       "eslint": "^9",
       "eslint-config-oclif": "^6",
       "eslint-config-prettier": "^10",
       "oclif": "^4",
       "prettier": "^3",
-      "typescript": "^5",
-      "shx": "^0.3.3"
+      "shx": "^0.3.3",
+      "typescript": "^5"
    },
    "oclif": {
       "bin": "tac",
@@ -67,6 +71,6 @@
       "singleQuote": true,
       "trailingComma": "none",
       "printWidth": 100,
-      "tabWidth": 2
+      "tabWidth": 3
    }
 }

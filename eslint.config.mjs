@@ -1,4 +1,4 @@
-import { includeIgnoreFile } from '@eslint/compat';
+import { includeIgnoreFile } from '@eslint/config-helpers';
 import oclif from 'eslint-config-oclif';
 import prettier from 'eslint-config-prettier';
 import path from 'node:path';

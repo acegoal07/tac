@@ -143,5 +143,10 @@ export default class CreateIndex extends Command {
 
       // File location
       console.log(chalk.green(`\nThe ${flags.name} cluster has been saved to:\n${clusterPath}\n`));
+
+      // Show how to start it up
+      console.log(
+         chalk.green(`\nYou can now start up the cluster using:\ntac cluster:start ${flags.name}\n`)
+      );
    }
 }
