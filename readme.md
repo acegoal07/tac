@@ -1,13 +1,20 @@
-# tac - Technically A Cluster 
+# tac - Technically A Cluster
 
 tac is a CLI tool that allows users to create test clusters using docker. It offers the ability to customise the clusters, manage the created clusters, and access them all from within the CLI.
 
+## Requirements:
+
+- `Node.js v24 or higher`
+- `Docker installed`
+
 ## How to install:
+
 ```sh
-sudo npm i -g @acegoal07/tac
+npm i -g @acegoal07/tac
 ```
 
 ## Available commands:
+
 - `tac help`: Display help information
 - `tac connect`: Connect to an existing cluster
 - `tac create`: Create a new cluster
