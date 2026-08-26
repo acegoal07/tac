@@ -16,7 +16,7 @@ npm i -g @acegoal07/tac
 ## Available commands:
 
 - `tac help`: Display help information
-- `tac connect`: Connect to an existing cluster
+- `tac connect <cluster_name>`: Connect to an existing cluster
 - `tac create`: Create a new cluster
    - `--name=<cluster_name>`: Specify the name of the cluster
    - `--count=<number_of_nodes>`: Specify the number of nodes in the cluster
@@ -25,8 +25,8 @@ npm i -g @acegoal07/tac
    - `--port=<port_number>`: Specify the port number for the cluster
    - `--database`: whether to include a database in the cluster
    - `--module=<module_name>`: which module manager to use (default is `Lmod`) available options are `lmod` and `em` (Environment Modules)
-- `tac destroy`: Destroy a specific cluster
+- `tac destroy <cluster_name>`: Destroy a specific cluster
 - `tac destroy:all`: Destroy all clusters
 - `tac cluster list`: List all available clusters
-- `tac cluster start`: Start a specific cluster
-- `tac cluster stop`: Stop a specific cluster
+- `tac cluster start <cluster_name>`: Start a specific cluster
+- `tac cluster stop <cluster_name>`: Stop a specific cluster
