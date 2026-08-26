@@ -121,7 +121,7 @@ export default class CreateIndex extends Command {
          writeFileSync(join(clusterPath, 'conf', 'slurmdbd.conf'), eta.render('slurmdbd', flags));
       }
 
-      spinner.succeed('Generated slurm config');
+      spinner.succeed('Generated slurm configs');
 
       // Generate munge key
       spinner = ora('Generating munge key').start();
