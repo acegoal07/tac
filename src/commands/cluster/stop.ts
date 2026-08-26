@@ -1,6 +1,6 @@
 import { Args, Command } from '@oclif/core';
 import chalk from 'chalk';
-import { stop } from 'docker-compose';
+import { ps, stop } from 'docker-compose';
 import { existsSync } from 'node:fs';
 import ora from 'ora';
 
@@ -21,6 +21,16 @@ export default class ClusterStop extends Command {
       // Check that a cluster exists
       if (!existsSync(clusterPath)) {
          return console.log('No cluster exists with that name');
+      }
+
+      // service information
+      const clusterInformation = await ps({ cwd: clusterPath });
+
+      // Check if anything within the cluster is running
+      if (
+         !clusterInformation.data.services.every((service) => service.state.toLowerCase() !== 'up')
+      ) {
+         return console.log(chalk.red(`\nThe cluster isn't running\n`));
       }
 
       // Stop the cluster

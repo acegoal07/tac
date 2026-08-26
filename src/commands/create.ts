@@ -112,8 +112,6 @@ export default class CreateIndex extends Command {
          views: pathToCLIAssets(__dirname, 'templates')
       });
 
-      console.log(pathToCLIAssets(__dirname, 'templates'));
-
       // Create compose.yaml
       spinner = ora('Generating compose file').start();
       writeFileSync(join(clusterPath, 'compose.yaml'), eta.render('creation', flags));
