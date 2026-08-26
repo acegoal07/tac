@@ -13,8 +13,8 @@ import {
 import { join } from 'node:path';
 import ora from 'ora';
 
-import { pathToCLIAssets, pathToCluster } from '../../assets/lib/paths';
-import { createKeyPair, createNodeName } from '../../assets/lib/util';
+import { pathToCLIAssets, pathToCluster } from '../assets/lib/paths';
+import { createKeyPair, createNodeName } from '../assets/lib/util';
 
 export default class CreateIndex extends Command {
    static override readonly description = 'describe the command here';
@@ -45,6 +45,13 @@ export default class CreateIndex extends Command {
          char: 'N',
          default: 'KindOfaCluster',
          description: 'The name of the cluster'
+      }),
+      port: Flags.integer({
+         char: 'p',
+         default: 2200,
+         description: 'Which port to use for the SSH',
+         max: 2300,
+         min: 2200
       })
    };
 
@@ -94,9 +101,11 @@ export default class CreateIndex extends Command {
          views: pathToCLIAssets(__dirname, 'templates')
       });
 
+      console.log(pathToCLIAssets(__dirname, 'templates'));
+
       // Create compose.yaml
       spinner = ora('Generating compose file').start();
-      writeFileSync(join(clusterPath, 'compose.yaml'), eta.render('creation.ts.eta', flags));
+      writeFileSync(join(clusterPath, 'compose.yaml'), eta.render('creation', flags));
       spinner.succeed('Generated compose file');
 
       // Copy all required docker files
@@ -119,6 +128,10 @@ export default class CreateIndex extends Command {
       writeFileSync(join(clusterPath, 'conf', 'slurm.conf'), eta.render('slurmconf', flags));
       if (flags.database) {
          writeFileSync(join(clusterPath, 'conf', 'slurmdbd.conf'), eta.render('slurmdbd', flags));
+      }
+
+      if (flags.port !== 2200) {
+         writeFileSync(join(clusterPath, 'port'), flags.port.toString());
       }
 
       spinner.succeed('Generated slurm configs');

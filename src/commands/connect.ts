@@ -69,7 +69,9 @@ export default class Connect extends Command {
       // Connect to the SSH client
       conn.connect({
          host: 'localhost',
-         port: 2222,
+         port: existsSync(join(clusterPath, 'port'))
+            ? Number(readFileSync(join(clusterPath, 'port')))
+            : 2200,
          privateKey: readFileSync(join(clusterPath, 'cluster_key')),
          username: 'dev'
       });

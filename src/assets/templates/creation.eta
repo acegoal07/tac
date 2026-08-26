@@ -7,7 +7,7 @@ services:
       container_name: <%= it.name %>-login
       hostname: login
       ports:
-         - "2222:22"
+         - "<%= it.port %>:22"
       environment:
          ROLE: login
          MODULE_FRAMEWORK: <%= it.module %>
