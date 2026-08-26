@@ -1,6 +1,7 @@
 import { Args, Command } from '@oclif/core';
 import chalk from 'chalk';
 import { ps, stop } from 'docker-compose';
+import Docker from 'dockerode';
 import { existsSync } from 'node:fs';
 import ora from 'ora';
 
@@ -14,6 +15,15 @@ export default class ClusterStop extends Command {
 
    public async run(): Promise<void> {
       const { args } = await this.parse(ClusterStop);
+
+      // Check whether docker is running
+      const docker = new Docker();
+
+      try {
+         await docker.ping();
+      } catch {
+         return console.log(chalk.red('\nDocker needs to be running\n'));
+      }
 
       // Path to cluster
       const clusterPath = pathToCluster(args.name);
