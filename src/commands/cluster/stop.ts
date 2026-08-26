@@ -1,4 +1,5 @@
 import { Args, Command } from '@oclif/core';
+import chalk from 'chalk';
 import { stop } from 'docker-compose';
 import { existsSync } from 'node:fs';
 import ora from 'ora';
@@ -23,6 +24,7 @@ export default class ClusterStop extends Command {
       }
 
       // Stop the cluster
+      console.log();
       const spinner = ora('Stopping the cluster').start();
 
       await stop({ cwd: clusterPath })
@@ -34,6 +36,7 @@ export default class ClusterStop extends Command {
          })
          .then(() => {
             spinner.succeed('Cluster has been stopped');
+            console.log(chalk.green(`\n${args.name} has been stopped\n`));
          });
    }
 }

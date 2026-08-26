@@ -1,4 +1,5 @@
 import { Command } from '@oclif/core';
+import chalk from 'chalk';
 import { down } from 'docker-compose';
 import { existsSync, readdirSync, rmSync, statSync } from 'node:fs';
 import { join } from 'node:path';
@@ -13,16 +14,20 @@ export default class DestroyAll extends Command {
    public async run(): Promise<void> {
       const clustersDir = pathToCluster('');
 
+      // Check to see if the cluster dir exists
       if (!existsSync(clustersDir)) {
-         return console.log(`No clusters exists`);
+         return console.log(`\nNo clusters exists\n`);
       }
 
+      console.log();
       const spinner = ora(`Removing clusters`).start();
 
+      // Read the clusters dir and filter out non folders
       const clusters = readdirSync(clustersDir)
          .map((cluster) => join(clustersDir, cluster))
          .filter((cluster) => statSync(cluster).isDirectory());
 
+      // Handle deleting the containers and removing their files
       await Promise.all(
          clusters.map(async (cluster) => {
             await down({
@@ -35,12 +40,14 @@ export default class DestroyAll extends Command {
                recursive: true
             });
          })
-      );
+      ).then(() => {
+         spinner.succeed('Successfully removed all clusters');
 
-      spinner.succeed('Successfully removed clusters');
-
-      console.log(
-         `\nRemoved ${clusters.length} ${clusters.length > 1 ? 'clusters' : 'cluster'}.\n`
-      );
+         console.log(
+            chalk.green(
+               `\nRemoved ${clusters.length} ${clusters.length > 1 ? 'clusters' : 'cluster'}.\n`
+            )
+         );
+      });
    }
 }

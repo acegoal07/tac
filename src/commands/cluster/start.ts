@@ -1,4 +1,5 @@
 import { Args, Command } from '@oclif/core';
+import chalk from 'chalk';
 import { upAll } from 'docker-compose';
 import { existsSync } from 'node:fs';
 import ora from 'ora';
@@ -27,7 +28,9 @@ export default class ClusterStart extends Command {
 
       // Start up container
       console.log(
-         '\nIf this is your first time booting a cluster\nit can take a while to create the image so be patient\n'
+         chalk.yellow(
+            '\nIf this is your first time booting a cluster\nit can take a while to create the image so be patient\n'
+         )
       );
 
       const spinner = ora('Initialising cluster');
@@ -36,12 +39,16 @@ export default class ClusterStart extends Command {
          .catch((error) => {
             spinner.fail('Failed to initialise cluster');
             return console.error(
-               `\nAn error occurred while initialising the cluster, ERROR:\n ${error}\n`
+               `\nAn error occurred while initialising the cluster, ERROR:\n${error}\n`
             );
          })
          .then(() => {
             spinner.succeed('Successfully initialised cluster');
-            console.log(`\n${args.name} has been started and can now be connect to using:\n\ntac connect ${args.name}\n`)
+            console.log(
+               chalk.green(
+                  `\n${args.name} has been started and can now be connect to using:\ntac connect ${args.name}\n`
+               )
+            );
          });
    }
 }

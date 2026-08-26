@@ -1,4 +1,5 @@
 import { Command, Flags } from '@oclif/core';
+import chalk from 'chalk';
 import { Eta } from 'eta';
 import { randomBytes } from 'node:crypto';
 import {
@@ -56,7 +57,7 @@ export default class CreateIndex extends Command {
 
       // Check to make sure a cluster doesn't already exist
       if (existsSync(clusterPath)) {
-         return console.log('A cluster with that name already exists');
+         return console.log(`\nA cluster with that name already exists\n`);
       }
 
       // Make required directories
@@ -65,6 +66,7 @@ export default class CreateIndex extends Command {
       mkdirSync(join(clusterPath, 'conf'), { recursive: true });
 
       //  Generate cluster keys
+      console.log();
       let spinner = ora('Generating cluster key').start();
 
       createKeyPair(authorizedKeys, join(clusterPath, 'cluster_key'));
@@ -127,6 +129,6 @@ export default class CreateIndex extends Command {
       spinner.succeed('Copied docker files');
 
       // File location
-      console.log(`\nThe ${flags.name} cluster has been saved to:\n${clusterPath}\n`);
+      console.log(chalk.green(`\nThe ${flags.name} cluster has been saved to:\n${clusterPath}\n`));
    }
 }
