@@ -42,7 +42,6 @@ export default class DestroyAll extends Command {
          })
       ).then(() => {
          spinner.succeed('Successfully removed all clusters');
-
          console.log(
             chalk.green(
                `\nRemoved ${clusters.length} ${clusters.length > 1 ? 'clusters' : 'cluster'}.\n`
