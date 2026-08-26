@@ -21,6 +21,9 @@ services:
          - ./hostkeys/login_ssh_host_ed25519_key.pub:/etc/ssh/ssh_host_ed25519_key.pub:ro
          - ./munge.key:/tmp/munge.key:ro
          - ./conf/slurm.conf:/tmp/conf/slurm.conf:ro
+<% if (it.database) { %>
+         - ./conf/slurmdbd.conf:/tmp/conf/slurmdbd.conf:ro
+<% } %>
 <% if (it.module === "em") { %>
          - ./setup_scripts/environment_modules.sh:/tmp/setup_scripts/environment-modules.sh:ro
 <% } %>
@@ -57,10 +60,6 @@ services:
 <% } %>
 <% if (it.module === "lmod") { %>
          - ./setup_scripts/lmod.sh:/tmp/setup_scripts/lmod.sh:ro
-<% } %>
-
-<% if (it.database) { %>
-         - ./conf/slurmdbd.conf:/tmp/conf/slurmdbd.conf:ro
 <% } %>
 
       networks:
