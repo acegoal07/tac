@@ -1,7 +1,8 @@
 import { Args, Command } from '@oclif/core';
 import { down } from 'docker-compose';
 import { existsSync, rmSync } from 'node:fs';
-import { join } from 'node:path';
+
+import { pathToCluster } from '../../assets/lib/paths';
 
 export default class DestroyIndex extends Command {
    static override readonly args = {
@@ -11,7 +12,7 @@ export default class DestroyIndex extends Command {
 
    public async run(): Promise<void> {
       const { args } = await this.parse(DestroyIndex);
-      const clusterDir = join(__dirname, '..', '..', 'clusters', args.name);
+      const clusterDir = pathToCluster(args.name);
 
       if (!existsSync(clusterDir)) {
          return console.log(`No cluster exists with that name`);
@@ -27,8 +28,8 @@ export default class DestroyIndex extends Command {
                recursive: true
             });
          })
-         .catch((error) => console.log(error));
-
-      console.log(`Removed the cluster ${args.name}.`);
+         .then(() => {
+            console.log(`Removed the cluster ${args.name}.`);
+         });
    }
 }

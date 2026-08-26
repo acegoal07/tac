@@ -1,5 +1,4 @@
 import { Command, Flags } from '@oclif/core';
-import { upAll } from 'docker-compose';
 import { Eta } from 'eta';
 import { randomBytes } from 'node:crypto';
 import {
@@ -116,7 +115,10 @@ export default class CreateIndex extends Command {
       // Generate cluster configs
       spinner = ora('Generating cluster configs').start();
       writeFileSync(join(clusterPath, 'conf', 'slurm.conf'), eta.render('slurmconf', flags));
-      writeFileSync(join(clusterPath, 'conf', 'slurmdbd.conf'), eta.render('slurmdbd', flags));
+      if (flags.database) {
+         writeFileSync(join(clusterPath, 'conf', 'slurmdbd.conf'), eta.render('slurmdbd', flags));
+      }
+
       spinner.succeed('Generated slurm config');
 
       // Generate munge key
@@ -125,11 +127,6 @@ export default class CreateIndex extends Command {
       spinner.succeed('Copied docker files');
 
       // File location
-      console.log(clusterPath);
-
-      // Attempt to compose container
-      spinner = ora('Initialising docker compose').start();
-      await upAll({ cwd: clusterPath }).catch((error) => console.log(error));
-      spinner.succeed('Initialised docker compose');
+      console.log(`\nThe ${flags.name} cluster has been saved to:\n${clusterPath}\n`);
    }
 }
