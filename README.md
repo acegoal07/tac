@@ -5,7 +5,7 @@ tac is a CLI tool that allows users to create test clusters using docker. It off
 ## Requirements:
 
 - `Node.js v24 or higher`
-- `Docker installed`
+- `Docker installed and running`
 
 ## How to install:
 
