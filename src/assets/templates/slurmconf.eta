@@ -6,8 +6,10 @@ AuthType=auth/munge
 SlurmctldHost=login
 SlurmctldPort=6817
 
+<% if (it.database) { %>
 AccountingStorageType=accounting_storage/slurmdbd
 AccountingStorageHost=database
+<% } %>
 
 ProctrackType=proctrack/pgid
 TaskPlugin=task/none

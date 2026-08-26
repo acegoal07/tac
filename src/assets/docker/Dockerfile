@@ -1,9 +1,10 @@
-FROM rockylinux:9
+FROM rockylinux:9.3
 
 # Install base stuff and enable extra modules
 RUN dnf -y install dnf-plugins-core && \
    dnf config-manager --set-enabled crb || true && \
-   dnf -y install epel-release
+   dnf -y install epel-release && \
+   dnf -y update
 
 # Install modules required to build slurm
 RUN dnf -y install \

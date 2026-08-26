@@ -1,3 +1,4 @@
+import envPaths from 'env-paths';
 import { join } from 'node:path';
 
 /**
@@ -12,11 +13,9 @@ export function pathToCLIAssets(dir: string, ...destination: string[]): string {
 
 /**
  * Gets the path to the cluster folder created by the CLI
- * @param dir
  * @param name
- * @param extra
  * @returns
  */
-export function pathToCluster(dir: string, name: string, ...extra: string[]): string {
-   return join(dir, '..', '..', 'clusters', name);
+export function pathToCluster(name: string): string {
+   return join(envPaths('tac').data, name);
 }

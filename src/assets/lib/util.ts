@@ -12,10 +12,10 @@ export function createNodeName(index: number): string {
 
 /**
  * Handles creating a cluster key pair
- * @param authorized_keys_path
+ * @param authorizedKeysPath
  * @param destination
  */
-export function createKeyPair(authorized_keys_path: string, destination: string) {
+export function createKeyPair(authorizedKeysPath: string, destination: string) {
    const keyPair = utils.generateKeyPairSync('ed25519');
 
    writeFileSync(`${destination}.pub`, keyPair.public);
@@ -24,5 +24,5 @@ export function createKeyPair(authorized_keys_path: string, destination: string)
    writeFileSync(destination, keyPair.private);
    chmodSync(destination, 0o600);
 
-   appendFileSync(authorized_keys_path, `${keyPair.public} \n`);
+   appendFileSync(authorizedKeysPath, `${keyPair.public} \n`);
 }

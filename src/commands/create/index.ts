@@ -27,7 +27,7 @@ export default class CreateIndex extends Command {
       }),
       database: Flags.boolean({
          char: 'd',
-         default: true,
+         default: false,
          description: 'Whether or not a database should be setup for the cluster'
       }),
       memory: Flags.integer({
@@ -44,8 +44,7 @@ export default class CreateIndex extends Command {
       name: Flags.string({
          char: 'N',
          default: 'KindOfaCluster',
-         description: 'The name of the cluster',
-         required: true
+         description: 'The name of the cluster'
       })
    };
 
@@ -53,11 +52,11 @@ export default class CreateIndex extends Command {
       const { flags } = await this.parse(CreateIndex);
 
       // Reused variables
-      const clusterPath = pathToCluster(__dirname, flags.name);
+      const clusterPath = pathToCluster(flags.name);
       const authorizedKeys = join(clusterPath, 'authorized_keys');
 
       // Check to make sure a cluster doesn't already exist
-      if (!existsSync(clusterPath)) {
+      if (existsSync(clusterPath)) {
          return console.log('A cluster with that name already exists');
       }
 
@@ -124,6 +123,9 @@ export default class CreateIndex extends Command {
       spinner = ora('Generating munge key').start();
       writeFileSync(join(clusterPath, 'munge.key'), randomBytes(256));
       spinner.succeed('Copied docker files');
+
+      // File location
+      console.log(clusterPath);
 
       // Attempt to compose container
       spinner = ora('Initialising docker compose').start();
