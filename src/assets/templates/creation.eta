@@ -41,7 +41,7 @@ services:
 
       mem_limit: <%= it.memory %>m
 
-      cpus: 4
+      cpus: <%= it.cpu %>
 
       environment:
          ROLE: compute

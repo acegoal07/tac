@@ -25,6 +25,12 @@ export default class CreateIndex extends Command {
          description: 'How many nodes to give to the cluster',
          min: 1
       }),
+      cpu: Flags.integer({
+         char: 'c',
+         default: 4,
+         description: 'How many CPUs to give each node',
+         min: 1
+      }),
       database: Flags.boolean({
          char: 'd',
          default: false,
