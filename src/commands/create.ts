@@ -43,7 +43,7 @@ export default class CreateIndex extends Command {
       }),
       name: Flags.string({
          char: 'N',
-         default: 'KindOfaCluster',
+         default: 'tac',
          description: 'The name of the cluster'
       }),
       port: Flags.integer({
