@@ -97,7 +97,7 @@ export default class CreateIndex extends Command {
 
       // Generate node keys
       spinner = ora('Generating node keys').start();
-      for (let i = 1; i <= flags.count; i++) {
+      for (let i = 1; i <= flags.nodes; i++) {
          createKeyPair(
             authorizedKeys,
             join(clusterPath, 'hostkeys', `${createNodeName(i)}_ssh_host_ed25519_key`)
