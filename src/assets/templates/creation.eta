@@ -32,7 +32,7 @@ services:
 <% } %>
       networks:
          - cluster
-<% for (let i = 1; i <= it.count; i++) { %>
+<% for (let i = 1; i <= it.nodes; i++) { %>
    node<%= String(i).padStart(2, "0") %>:
       image: generic-node
       container_name: <%= it.name %>-node<%= String(i).padStart(2, "0") %>
@@ -41,7 +41,7 @@ services:
 
       mem_limit: <%= it.memory %>m
 
-      cpus: <%= it.cpu %>
+      cpus: <%= it.cpus %>
 
       environment:
          ROLE: compute

@@ -25,6 +25,6 @@ SelectTypeParameters=CR_Core
 StateSaveLocation=/slurm/state
 SlurmdSpoolDir=/slurm/spool
 
-NodeName=node[01-<%= String(it.count).padStart(2, '0') %>] CPUs=<%= it.cpu %> RealMemory=<%= it.memory %> State=UNKNOWN
+NodeName=node[01-<%= String(it.count).padStart(2, '0') %>] CPUs=<%= it.cpus %> RealMemory=<%= it.memory %> State=UNKNOWN
 
 PartitionName=debug Nodes=node[01-<%= String(it.count).padStart(2, '0') %>] Default=YES MaxTime=INFINITE State=UP

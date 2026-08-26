@@ -19,13 +19,7 @@ import { createKeyPair, createNodeName } from '../assets/lib/util';
 export default class CreateIndex extends Command {
    static override readonly description = 'describe the command here';
    static override readonly flags = {
-      count: Flags.integer({
-         char: 'c',
-         default: 1,
-         description: 'How many nodes to give to the cluster',
-         min: 1
-      }),
-      cpu: Flags.integer({
+      cpus: Flags.integer({
          char: 'c',
          default: 4,
          description: 'How many CPUs to give each node',
@@ -43,14 +37,20 @@ export default class CreateIndex extends Command {
          min: 1024
       }),
       module: Flags.string({
-         char: 'M',
+         char: 'l',
          default: 'lmod',
          description: 'The module loader type to use in the cluster'
       }),
       name: Flags.string({
-         char: 'N',
+         char: 'n',
          default: 'tac',
          description: 'The name of the cluster'
+      }),
+      nodes: Flags.integer({
+         char: 'k',
+         default: 1,
+         description: 'How many nodes to give to the cluster',
+         min: 1
       }),
       port: Flags.integer({
          char: 'p',
