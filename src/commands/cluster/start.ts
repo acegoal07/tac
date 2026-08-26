@@ -43,7 +43,7 @@ export default class ClusterStart extends Command {
          )
       );
 
-      const spinner = ora('Initialising cluster');
+      const spinner = ora('Initialising cluster').start();
 
       await upAll({ cwd: clusterPath })
          .catch((error) => {
