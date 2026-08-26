@@ -1,78 +1,72 @@
 {
    "name": "@acegoal07/tac",
-   "description": "A cli tool to create what is technical a cluster using docker",
    "version": "0.0.1",
+   "description": "A CLI tool to create a technical cluster using Docker",
    "author": "acegoal07",
+   "license": "MIT",
+   "repository": "acegoal07/tac",
+   "homepage": "https://github.com/acegoal07/tac",
+   "bugs": "https://github.com/acegoal07/tac/issues",
+   "keywords": [
+      "cli",
+      "docker",
+      "docker-compose",
+      "cluster",
+      "oclif"
+   ],
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
    "bin": {
       "tac": "./bin/run.js"
    },
-   "bugs": "https://github.com/acegoal07/tac/issues",
+   "files": [
+      "bin",
+      "dist",
+      "oclif.manifest.json"
+   ],
+   "engines": {
+      "node": ">=24.0.0"
+   },
    "dependencies": {
       "@oclif/core": "^4",
       "@oclif/plugin-help": "^6",
-      "chalk": "^6.0.0",
+      "chalk": "^6",
       "docker-compose": "^1.4.2",
-      "env-paths": "^4.0.0",
+      "env-paths": "^4",
       "eta": "^4.6.0",
-      "ora": "^9.4.1",
+      "ora": "^9",
       "ssh2": "^1.17.0"
    },
    "devDependencies": {
-      "@eslint/compat": "^1",
       "@types/ssh2": "^1.15.5",
       "eslint": "^9",
       "eslint-config-oclif": "^6",
       "eslint-config-prettier": "^10",
       "oclif": "^4",
-      "prettier": "^3.9.6",
-      "shx": "^0.3.3",
-      "ts-node": "^10",
-      "typescript": "^5"
+      "prettier": "^3",
+      "typescript": "^5",
+      "shx": "^0.3.3"
    },
-   "engines": {
-      "node": ">=24.0.0"
-   },
-   "files": [
-      "./bin",
-      "./dist",
-      "./oclif.manifest.json"
-   ],
-   "homepage": "https://github.com/acegoal07/tac",
-   "keywords": [
-      "oclif"
-   ],
-   "license": "MIT",
-   "main": "dist/index.js",
    "oclif": {
       "bin": "tac",
       "dirname": "tac",
       "commands": "./dist/commands",
       "plugins": [
          "@oclif/plugin-help"
-      ],
-      "topicSeparator": " ",
-      "topics": {
-         "hello": {
-            "description": "Say hello to the world and others"
-         }
-      }
+      ]
    },
-   "repository": "acegoal07/tac",
    "scripts": {
       "build": "shx rm -rf dist && tsc -b && shx mkdir -p dist/assets && shx cp -r src/assets/setup_scripts dist/assets/ && shx cp -r src/assets/templates dist/assets/ && shx cp -r src/assets/docker dist/assets/",
       "lint": "eslint",
-      "format": "npx prettier . --write",
-      "postpack": "shx rm -f oclif.manifest.json",
-      "posttest": "npm run lint",
+      "format": "prettier . --write",
       "prepack": "oclif manifest && oclif readme",
-      "version": "oclif readme && git add README.md"
+      "postpack": "shx rm -f oclif.manifest.json"
    },
-   "types": "dist/index.d.ts",
    "prettier": {
       "semi": true,
       "singleQuote": true,
       "trailingComma": "none",
       "printWidth": 100,
-      "tabWidth": 3
+      "tabWidth": 2
    }
 }
