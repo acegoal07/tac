@@ -2,7 +2,14 @@ import { Command, Flags } from '@oclif/core';
 import { upAll } from 'docker-compose';
 import { Eta } from 'eta';
 import { randomBytes } from 'node:crypto';
-import { appendFileSync, copyFileSync, cpSync, mkdirSync, writeFileSync } from 'node:fs';
+import {
+   appendFileSync,
+   copyFileSync,
+   cpSync,
+   existsSync,
+   mkdirSync,
+   writeFileSync
+} from 'node:fs';
 import { join } from 'node:path';
 import ora from 'ora';
 
@@ -44,31 +51,37 @@ export default class CreateIndex extends Command {
 
    public async run(): Promise<void> {
       const { flags } = await this.parse(CreateIndex);
+
+      // Reused variables
       const clusterPath = pathToCluster(__dirname, flags.name);
+      const authorizedKeys = join(clusterPath, 'authorized_keys');
+
+      // Check to make sure a cluster doesn't already exist
+      if (!existsSync(clusterPath)) {
+         return console.log('A cluster with that name already exists');
+      }
 
       // Make required directories
       mkdirSync(clusterPath, { recursive: true });
       mkdirSync(join(clusterPath, 'hostkeys'), { recursive: true });
       mkdirSync(join(clusterPath, 'conf'), { recursive: true });
 
+      //  Generate cluster keys
       let spinner = ora('Generating cluster key').start();
 
-      createKeyPair(join(clusterPath, 'authorized_keys'), join(clusterPath, 'cluster_key'));
-
+      createKeyPair(authorizedKeys, join(clusterPath, 'cluster_key'));
       spinner.succeed('Generated cluster key');
-      spinner = ora('Generating login key').start();
 
-      createKeyPair(
-         join(clusterPath, 'authorized_keys'),
-         join(clusterPath, 'hostkeys', 'login_ssh_host_ed25519_key')
-      );
-
+      // Generate login node keys
+      spinner = ora('Generating login node key').start();
+      createKeyPair(authorizedKeys, join(clusterPath, 'hostkeys', 'login_ssh_host_ed25519_key'));
       spinner.succeed('Generated login key');
-      spinner = ora('Generating host keys').start();
 
+      // Generate node keys
+      spinner = ora('Generating node keys').start();
       for (let i = 1; i <= flags.count; i++) {
          createKeyPair(
-            join(clusterPath, 'authorized_keys'),
+            authorizedKeys,
             join(clusterPath, 'hostkeys', `${createNodeName(i)}_ssh_host_ed25519_key`)
          );
          appendFileSync(join(clusterPath, 'known_hosts'), `${createNodeName(i)}\n`);
@@ -76,47 +89,45 @@ export default class CreateIndex extends Command {
 
       spinner.succeed('Generated host keys');
 
+      // Setup eta
       const eta = new Eta({
          views: pathToCLIAssets(__dirname, 'templates')
       });
 
+      // Create compose.yaml
       spinner = ora('Generating compose file').start();
-
       writeFileSync(join(clusterPath, 'compose.yaml'), eta.render('creation.ts.eta', flags));
-
       spinner.succeed('Generated compose file');
-      spinner = ora('Copying docker files').start();
 
+      // Copy all required docker files
+      spinner = ora('Copying docker files').start();
       copyFileSync(
          pathToCLIAssets(__dirname, 'docker', 'Dockerfile'),
          join(clusterPath, 'Dockerfile')
       );
-
       copyFileSync(
          pathToCLIAssets(__dirname, 'docker', 'entrypoint.sh'),
          join(clusterPath, 'entrypoint.sh')
       );
-
       cpSync(pathToCLIAssets(__dirname, 'setup_scripts'), join(clusterPath, 'setup_scripts'), {
          recursive: true
       });
-
       spinner.succeed('Copied docker files');
-      spinner = ora('Generating slurm configs').start();
 
+      // Generate cluster configs
+      spinner = ora('Generating cluster configs').start();
       writeFileSync(join(clusterPath, 'conf', 'slurm.conf'), eta.render('slurmconf', flags));
       writeFileSync(join(clusterPath, 'conf', 'slurmdbd.conf'), eta.render('slurmdbd', flags));
-
       spinner.succeed('Generated slurm config');
+
+      // Generate munge key
       spinner = ora('Generating munge key').start();
-
       writeFileSync(join(clusterPath, 'munge.key'), randomBytes(256));
-
       spinner.succeed('Copied docker files');
+
+      // Attempt to compose container
       spinner = ora('Initialising docker compose').start();
-
       await upAll({ cwd: clusterPath }).catch((error) => console.log(error));
-
       spinner.succeed('Initialised docker compose');
    }
 }
