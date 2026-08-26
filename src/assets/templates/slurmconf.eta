@@ -3,12 +3,14 @@ ClusterName=cluster
 SlurmUser=slurm
 
 AuthType=auth/munge
+
 SlurmctldHost=login
 SlurmctldPort=6817
 
 <% if (it.database) { %>
 AccountingStorageType=accounting_storage/slurmdbd
 AccountingStorageHost=database
+AccountingStoragePort=6819
 <% } %>
 
 ProctrackType=proctrack/pgid
@@ -16,6 +18,7 @@ TaskPlugin=task/none
 JobAcctGatherType=jobacct_gather/none
 
 SchedulerType=sched/backfill
+
 SelectType=select/cons_tres
 SelectTypeParameters=CR_Core
 
@@ -23,4 +26,5 @@ StateSaveLocation=/slurm/state
 SlurmdSpoolDir=/slurm/spool
 
 NodeName=node[01-<%= String(it.count).padStart(2, '0') %>] CPUs=4 RealMemory=<%= it.memory %> State=UNKNOWN
+
 PartitionName=debug Nodes=node[01-<%= String(it.count).padStart(2, '0') %>] Default=YES MaxTime=INFINITE State=UP

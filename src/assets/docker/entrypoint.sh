@@ -47,7 +47,7 @@ elif [ "$ROLE" = "compute" ]; then
     slurmd -Dvvv &
     exec /usr/sbin/sshd -D
 elif [ "$ROLE" = "database" ]; then
-    /tmp/setup_scripts/database.sh
+    bash /tmp/setup_scripts/database.sh
 
     echo "Starting slurmdbd..."
     exec slurmdbd -Dvvv

@@ -78,7 +78,9 @@ services:
          - ./conf:/tmp/conf:ro
          - ./munge.key:/tmp/munge.key:ro
          - ./setup_scripts/database.sh:/tmp/setup_scripts/database.sh:ro
-         
+         - ./hostkeys/database_ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key:ro
+         - ./hostkeys/database_ssh_host_ed25519_key.pub:/etc/ssh/ssh_host_ed25519_key.pub:ro
+
       networks:
          - cluster
 <% } %>

@@ -84,6 +84,11 @@ export default class CreateIndex extends Command {
       createKeyPair(authorizedKeys, join(clusterPath, 'hostkeys', 'login_ssh_host_ed25519_key'));
       spinner.succeed('Generated login key');
 
+      // Generate database keys
+      spinner = ora('Generating database key').start();
+      createKeyPair(authorizedKeys, join(clusterPath, 'hostkeys', 'database_ssh_host_ed25519_key'));
+      spinner.succeed('Generated database key');
+
       // Generate node keys
       spinner = ora('Generating node keys').start();
       for (let i = 1; i <= flags.count; i++) {
@@ -142,7 +147,7 @@ export default class CreateIndex extends Command {
       spinner.succeed('Copied docker files');
 
       // File location
-      console.log(chalk.green(`\nThe ${flags.name} cluster has been saved to:\n${clusterPath}\n`));
+      console.log(chalk.green(`\nThe ${flags.name} cluster has been saved to:\n${clusterPath}`));
 
       // Show how to start it up
       console.log(
