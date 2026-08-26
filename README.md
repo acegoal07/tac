@@ -1,5 +1,7 @@
 # tac - Technically A Cluster
 
+[View on NPM](https://www.npmjs.com/package/@acegoal07/tac)
+
 tac is a CLI tool that allows users to create test clusters using docker. It offers the ability to customise the clusters, manage the created clusters, and access them all from within the CLI.
 
 ## Requirements:
