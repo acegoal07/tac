@@ -1,6 +1,6 @@
 {
    "name": "@acegoal07/tac",
-   "version": "0.0.2",
+   "version": "0.0.4",
    "description": "A CLI tool for creating, accessing and managing docker based clusters",
    "author": "acegoal07",
    "license": "MIT",
