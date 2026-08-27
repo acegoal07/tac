@@ -1,8 +1,9 @@
 import { Command } from '@oclif/core';
 import chalk from 'chalk';
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import Table from 'cli-table3';
+import { existsSync, readdirSync } from 'node:fs';
 
+import Cluster from '../../assets/lib/cluster';
 import { pathToCluster } from '../../assets/lib/paths';
 
 export default class ClusterList extends Command {
@@ -18,23 +19,44 @@ export default class ClusterList extends Command {
       }
 
       // Read the clusters dir and filter out non folders
-      const clusters = readdirSync(clustersDir)
-         .map((cluster) => join(clustersDir, cluster))
-         .filter((cluster) => statSync(cluster).isDirectory());
+      const clusterNames = readdirSync(clustersDir, { withFileTypes: true })
+         .filter((entry) => entry.isDirectory())
+         .map((entry) => entry.name);
 
       // Makes sure there is at least one cluster
-      if (clusters.length === 0) {
+      if (clusterNames.length === 0) {
          return console.log(chalk.bold.green(`\nNo available clusters\n`));
       }
 
-      // Display all clusters paths
-      console.log(chalk.bold.green(`\nAvailable clusters:\n`));
-      for (const cluster of clusters) {
-         const portFile = join(cluster, 'port');
-         console.log(
-            `${cluster.split('/').at(-1)}:${existsSync(portFile) ? Number(readFileSync(portFile)) : 2200}`
-         );
+      const table = new Table({
+         colWidths: [20, 15, 10, 8, 12, 8, 12],
+         head: [
+            chalk.bold.cyan('Name'),
+            chalk.bold.cyan('Module'),
+            chalk.bold.cyan('Port'),
+            chalk.bold.cyan('CPUs'),
+            chalk.bold.cyan('Memory'),
+            chalk.bold.cyan('Nodes'),
+            chalk.bold.cyan('Database')
+         ]
+      });
+
+      for (const name of clusterNames) {
+         const cluster = new Cluster(name);
+
+         table.push([
+            cluster.name,
+            cluster.module,
+            cluster.port,
+            cluster.cpus,
+            cluster.memory,
+            cluster.nodes,
+            cluster.database ? 'Yes' : 'No'
+         ]);
       }
+
+      console.log(chalk.bold.green('\nAvailable clusters:\n'));
+      console.log(table.toString());
 
       console.log();
    }

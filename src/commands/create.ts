@@ -14,6 +14,7 @@ import { join } from 'node:path';
 import ora from 'ora';
 
 import { pathToCLIAssets, pathToCluster } from '../assets/lib/paths';
+import { clusterParams } from '../assets/lib/types';
 import { createKeyPair, createNodeName } from '../assets/lib/util';
 
 export default class CreateIndex extends Command {
@@ -63,6 +64,16 @@ export default class CreateIndex extends Command {
 
    public async run(): Promise<void> {
       const { flags } = await this.parse(CreateIndex);
+
+      const clusterInfo: clusterParams = {
+         cpus: flags.cpus,
+         database: flags.database,
+         memory: flags.memory,
+         module: flags.module,
+         name: flags.name,
+         nodes: flags.nodes,
+         port: flags.port
+      };
 
       // Reused variables
       const clusterPath = pathToCluster(flags.name);
@@ -163,11 +174,10 @@ export default class CreateIndex extends Command {
          writeFileSync(join(clusterPath, 'conf', 'slurmdbd.conf'), eta.render('slurmdbd', flags));
       }
 
-      if (flags.port !== 2200) {
-         writeFileSync(join(clusterPath, 'port'), flags.port.toString());
-      }
-
       spinner.succeed('Generated slurm configs');
+
+      spinner = ora('Creating info.json');
+      writeFileSync(join(clusterPath, 'info.json'), JSON.stringify(clusterInfo));
 
       // Generate munge key
       spinner = ora('Generating munge key').start();
