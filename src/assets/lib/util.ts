@@ -1,5 +1,7 @@
 import { appendFileSync, chmodSync, writeFileSync } from 'node:fs';
-import { utils } from 'ssh2';
+import { Client, utils } from 'ssh2';
+
+import createConnectionObject from './create-connection-object';
 
 /**
  * Creates the name of a node using it's index and has option for more padding before the number
@@ -27,4 +29,54 @@ export function createKeyPair(authorizedKeysPath: string, destination: string) {
    appendFileSync(authorizedKeysPath, `${keyPair.public} \n`);
 
    return keyPair.public;
+}
+
+export function sshdRunning(name: string, timeout = 20_000): Promise<boolean> {
+   return new Promise((resolve) => {
+      const deadline = Date.now() + timeout;
+      let resolved = false;
+
+      const finish = (result: boolean) => {
+         if (resolved) {
+            return;
+         }
+
+         resolved = true;
+         resolve(result);
+      };
+
+      const check = () => {
+         if (resolved) {
+            return;
+         }
+
+         const remaining = deadline - Date.now();
+
+         if (remaining <= 0) {
+            finish(false);
+            return;
+         }
+
+         const conn = new Client();
+
+         conn.on('ready', () => {
+            conn.end();
+            finish(true);
+         });
+
+         conn.on('error', () => {
+            conn.destroy();
+
+            if (Date.now() < deadline) {
+               setTimeout(check, 500);
+            } else {
+               finish(false);
+            }
+         });
+
+         conn.connect(createConnectionObject(name));
+      };
+
+      check();
+   });
 }
