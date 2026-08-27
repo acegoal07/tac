@@ -8,7 +8,7 @@ import { join } from 'node:path';
  * @returns
  */
 export function pathToCLIAssets(dir: string, ...destination: string[]): string {
-   return join(dir, '..', 'assets', ...destination);
+   return join(dir, '..', ...destination);
 }
 
 /**
