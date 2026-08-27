@@ -87,7 +87,11 @@ export default class CreateIndex extends Command {
 
       // Generate login node keys
       spinner = ora('Generating login node key').start();
-      createKeyPair(authorizedKeys, join(clusterPath, 'hostkeys', 'login_ssh_host_ed25519_key'));
+      const loginKeyPub = createKeyPair(
+         authorizedKeys,
+         join(clusterPath, 'hostkeys', 'login_ssh_host_ed25519_key')
+      );
+      appendFileSync(join(clusterPath, 'known_hosts'), `login ${loginKeyPub}\n`);
       spinner.succeed('Generated login key');
 
       // Generate database keys
@@ -95,17 +99,25 @@ export default class CreateIndex extends Command {
       createKeyPair(authorizedKeys, join(clusterPath, 'hostkeys', 'database_ssh_host_ed25519_key'));
       spinner.succeed('Generated database key');
 
-      // Generate node keys
+      // Generate node host keys
       spinner = ora('Generating node keys').start();
       for (let i = 1; i <= flags.nodes; i++) {
-         createKeyPair(
+         const nodeName = createNodeName(i);
+
+         const publicKey = createKeyPair(
             authorizedKeys,
-            join(clusterPath, 'hostkeys', `${createNodeName(i)}_ssh_host_ed25519_key`)
+            join(clusterPath, 'hostkeys', `${nodeName}_ssh_host_ed25519_key`)
          );
-         appendFileSync(join(clusterPath, 'known_hosts'), `${createNodeName(i)}\n`);
+
+         appendFileSync(join(clusterPath, 'known_hosts'), `${createNodeName(i)} ${publicKey}\n`);
       }
 
       spinner.succeed('Generated host keys');
+
+      // Generate key for moving between clusters
+      spinner = ora('Generating shared cluster key').start();
+      createKeyPair(authorizedKeys, join(clusterPath, `shared_cluster_key`));
+      spinner.succeed('Generated shared key');
 
       // Setup eta
       const eta = new Eta({

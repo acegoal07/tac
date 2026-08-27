@@ -25,4 +25,6 @@ export function createKeyPair(authorizedKeysPath: string, destination: string) {
    chmodSync(destination, 0o600);
 
    appendFileSync(authorizedKeysPath, `${keyPair.public} \n`);
+
+   return keyPair.public;
 }
