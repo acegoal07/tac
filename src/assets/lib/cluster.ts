@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { pathToCluster } from './paths';
+import { clusterParams } from './types';
 
 interface ClusterParams {
    cpus: number;
@@ -20,12 +21,27 @@ export default class Cluster {
    public readonly module!: string;
    public readonly name!: string;
    public readonly nodes!: number;
+   public readonly path: string;
    public readonly port!: number;
 
    constructor(name: string) {
       const clusterDir = pathToCluster(name);
       const info = JSON.parse(readFileSync(join(clusterDir, 'info.json'), 'utf8')) as ClusterParams;
 
+      this.path = clusterDir;
+
       Object.assign(this, info);
+   }
+
+   public dump(): clusterParams {
+      return {
+         cpus: this.cpus,
+         database: this.database,
+         memory: this.memory,
+         module: this.module,
+         name: this.name,
+         nodes: this.nodes,
+         port: this.port
+      };
    }
 }

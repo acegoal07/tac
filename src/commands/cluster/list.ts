@@ -7,7 +7,7 @@ import Cluster from '../../assets/lib/cluster';
 import { pathToCluster } from '../../assets/lib/paths';
 
 export default class ClusterList extends Command {
-   static override readonly description = 'describe the command here';
+   static override readonly description = 'Lists all the clusters';
 
    public async run(): Promise<void> {
       // Cluster dir path
