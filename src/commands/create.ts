@@ -127,6 +127,18 @@ export default class CreateIndex extends Command {
          pathToCLIAssets(__dirname, 'docker', 'entrypoint.sh'),
          join(clusterPath, 'entrypoint.sh')
       );
+      copyFileSync(
+         pathToCLIAssets(__dirname, 'docker', 'entrypoint-database.sh'),
+         join(clusterPath, 'entrypoint-database.sh')
+      );
+      copyFileSync(
+         pathToCLIAssets(__dirname, 'docker', 'entrypoint-login.sh'),
+         join(clusterPath, 'entrypoint-login.sh')
+      );
+      copyFileSync(
+         pathToCLIAssets(__dirname, 'docker', 'entrypoint-compute.sh'),
+         join(clusterPath, 'entrypoint-compute.sh')
+      );
       cpSync(pathToCLIAssets(__dirname, 'setup_scripts'), join(clusterPath, 'setup_scripts'), {
          recursive: true
       });

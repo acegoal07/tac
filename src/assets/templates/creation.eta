@@ -2,14 +2,17 @@ name: <%= it.name %>
 
 services:
    login:
-      build: .
-      image: generic-node
+      build:
+         context: .
+         target: login
+
+      image: <%= it.name %>-login
+
       container_name: <%= it.name %>-login
       hostname: login
       ports:
          - "<%= it.port %>:22"
       environment:
-         ROLE: login
          MODULE_FRAMEWORK: <%= it.module %>
 
       volumes:
@@ -34,7 +37,11 @@ services:
          - cluster
 <% for (let i = 1; i <= it.nodes; i++) { %>
    node<%= String(i).padStart(2, "0") %>:
-      image: generic-node
+      build:
+         context: .
+         target: compute
+
+      image: <%= it.name %>-compute
       container_name: <%= it.name %>-node<%= String(i).padStart(2, "0") %>
 
       hostname: node<%= String(i).padStart(2, "0") %>
@@ -44,7 +51,6 @@ services:
       cpus: <%= it.cpus %>
 
       environment:
-         ROLE: compute
          MODULE_FRAMEWORK: <%= it.module %>
 
       volumes:
@@ -67,11 +73,14 @@ services:
 <% } %>
 <% if (it.database) { %>
    database:
-      image: generic-node
+      build:
+         context: .
+         target: compute
+
+      image: <%= it.name %>-compute
       container_name: <%= it.name %>-database
       hostname: database
       environment:
-         ROLE: database
          MODULE_FRAMEWORK: <%= it.module %>
 
       volumes:
