@@ -6,6 +6,7 @@ import { existsSync } from 'node:fs';
 import ora from 'ora';
 
 import { pathToCluster } from '../../assets/lib/paths';
+import { sshdRunning } from '../../assets/lib/util';
 
 export default class ClusterStart extends Command {
    static override readonly args = {
@@ -53,22 +54,34 @@ export default class ClusterStart extends Command {
          )
       );
 
-      const spinner = ora('Initialising cluster').start();
+      let spinner = ora('Booting cluster').start();
 
       await upAll({ cwd: clusterPath })
          .catch((error) => {
-            spinner.fail('Failed to initialise cluster');
+            spinner.fail('Failed to boot cluster');
             return console.error(
-               `\nAn error occurred while initialising the cluster, ERROR:\n${error}\n`
+               `\nAn error occurred while booting the cluster, ERROR:\n${error}\n`
             );
          })
-         .then(() => {
-            spinner.succeed('Successfully initialised cluster');
-            console.log(
-               chalk.green(
-                  `\n${args.name} has been started and can now be connect to using:\ntac connect ${args.name}\n`
-               )
-            );
+         .then(async () => {
+            spinner.succeed('Successfully booted cluster');
+            spinner = ora('Running initialiser scripts').start();
+            const running = await sshdRunning(args.name);
+            if (running) {
+               spinner.succeed('SSH connection established');
+               console.log(
+                  chalk.green(
+                     `\n${args.name} has been started and can now be connect to using:\ntac connect ${args.name}\n`
+                  )
+               );
+            } else {
+               spinner.fail('SSH connection timed out');
+               console.log(
+                  chalk.yellow(
+                     `\n${args.name} is taking a while to start the SSH daemon, wait a few minutes and then try connecting using: \ntac connect ${args.name}\n`
+                  )
+               );
+            }
          });
    }
 }

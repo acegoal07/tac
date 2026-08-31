@@ -1,20 +1,9 @@
 import { Command, Flags } from '@oclif/core';
 import chalk from 'chalk';
-import { Eta } from 'eta';
-import { randomBytes } from 'node:crypto';
-import {
-   appendFileSync,
-   copyFileSync,
-   cpSync,
-   existsSync,
-   mkdirSync,
-   writeFileSync
-} from 'node:fs';
-import { join } from 'node:path';
-import ora from 'ora';
 
-import { pathToCLIAssets, pathToCluster } from '../assets/lib/paths';
-import { createKeyPair, createNodeName } from '../assets/lib/util';
+import createCluster from '../assets/lib/create-cluster';
+import { pathToCluster } from '../assets/lib/paths';
+import { clusterParams } from '../assets/lib/types';
 
 export default class CreateIndex extends Command {
    static override readonly description = 'describe the command here';
@@ -64,98 +53,32 @@ export default class CreateIndex extends Command {
    public async run(): Promise<void> {
       const { flags } = await this.parse(CreateIndex);
 
-      // Reused variables
-      const clusterPath = pathToCluster(flags.name);
-      const authorizedKeys = join(clusterPath, 'authorized_keys');
+      const clusterInfo: clusterParams = {
+         cpus: flags.cpus,
+         database: flags.database,
+         memory: flags.memory,
+         module: flags.module,
+         name: flags.name,
+         nodes: flags.nodes,
+         port: flags.port
+      };
 
-      // Check to make sure a cluster doesn't already exist
-      if (existsSync(clusterPath)) {
-         return console.log(`\nA cluster with that name already exists\n`);
-      }
+      const clusterPath = pathToCluster(clusterInfo.name);
 
-      // Make required directories
-      mkdirSync(clusterPath, { recursive: true });
-      mkdirSync(join(clusterPath, 'hostkeys'), { recursive: true });
-      mkdirSync(join(clusterPath, 'conf'), { recursive: true });
+      const created = createCluster(clusterInfo, clusterPath);
 
-      //  Generate cluster keys
-      console.log();
-      let spinner = ora('Generating cluster key').start();
+      if (created) {
+         // File location
+         console.log(chalk.green(`\nThe ${flags.name} cluster has been saved to:\n${clusterPath}`));
 
-      createKeyPair(authorizedKeys, join(clusterPath, 'cluster_key'));
-      spinner.succeed('Generated cluster key');
-
-      // Generate login node keys
-      spinner = ora('Generating login node key').start();
-      createKeyPair(authorizedKeys, join(clusterPath, 'hostkeys', 'login_ssh_host_ed25519_key'));
-      spinner.succeed('Generated login key');
-
-      // Generate database keys
-      spinner = ora('Generating database key').start();
-      createKeyPair(authorizedKeys, join(clusterPath, 'hostkeys', 'database_ssh_host_ed25519_key'));
-      spinner.succeed('Generated database key');
-
-      // Generate node keys
-      spinner = ora('Generating node keys').start();
-      for (let i = 1; i <= flags.nodes; i++) {
-         createKeyPair(
-            authorizedKeys,
-            join(clusterPath, 'hostkeys', `${createNodeName(i)}_ssh_host_ed25519_key`)
+         // Show how to start it up
+         console.log(
+            chalk.green(
+               `\nYou can now start up the cluster using:\ntac cluster:start ${flags.name}\n`
+            )
          );
-         appendFileSync(join(clusterPath, 'known_hosts'), `${createNodeName(i)}\n`);
+      } else {
+         console.log(chalk.red('\nFailed to set up cluster\n'));
       }
-
-      spinner.succeed('Generated host keys');
-
-      // Setup eta
-      const eta = new Eta({
-         views: pathToCLIAssets(__dirname, 'templates')
-      });
-
-      // Create compose.yaml
-      spinner = ora('Generating compose file').start();
-      writeFileSync(join(clusterPath, 'compose.yaml'), eta.render('creation', flags));
-      spinner.succeed('Generated compose file');
-
-      // Copy all required docker files
-      spinner = ora('Copying docker files').start();
-      copyFileSync(
-         pathToCLIAssets(__dirname, 'docker', 'Dockerfile'),
-         join(clusterPath, 'Dockerfile')
-      );
-      copyFileSync(
-         pathToCLIAssets(__dirname, 'docker', 'entrypoint.sh'),
-         join(clusterPath, 'entrypoint.sh')
-      );
-      cpSync(pathToCLIAssets(__dirname, 'setup_scripts'), join(clusterPath, 'setup_scripts'), {
-         recursive: true
-      });
-      spinner.succeed('Copied docker files');
-
-      // Generate cluster configs
-      spinner = ora('Generating cluster configs').start();
-      writeFileSync(join(clusterPath, 'conf', 'slurm.conf'), eta.render('slurmconf', flags));
-      if (flags.database) {
-         writeFileSync(join(clusterPath, 'conf', 'slurmdbd.conf'), eta.render('slurmdbd', flags));
-      }
-
-      if (flags.port !== 2200) {
-         writeFileSync(join(clusterPath, 'port'), flags.port.toString());
-      }
-
-      spinner.succeed('Generated slurm configs');
-
-      // Generate munge key
-      spinner = ora('Generating munge key').start();
-      writeFileSync(join(clusterPath, 'munge.key'), randomBytes(256));
-      spinner.succeed('Copied docker files');
-
-      // File location
-      console.log(chalk.green(`\nThe ${flags.name} cluster has been saved to:\n${clusterPath}`));
-
-      // Show how to start it up
-      console.log(
-         chalk.green(`\nYou can now start up the cluster using:\ntac cluster:start ${flags.name}\n`)
-      );
    }
 }
