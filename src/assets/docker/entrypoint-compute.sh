@@ -38,4 +38,5 @@ runuser -u munge -- munged
 
 echo "Starting slurmd..."
 slurmd -Dvvv &
+
 exec /usr/sbin/sshd -D

@@ -37,5 +37,6 @@ echo "Starting munged..."
 runuser -u munge -- munged
 
 echo "Starting slurmctld..."
-slurmctld -Dvvv &
+slurmctld -c -i -Dvvv &
+
 exec /usr/sbin/sshd -D
