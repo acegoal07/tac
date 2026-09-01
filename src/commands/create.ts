@@ -1,9 +1,8 @@
 import { Command, Flags } from '@oclif/core';
 import chalk from 'chalk';
+import ora from 'ora';
 
-import createCluster from '../assets/lib/create-cluster';
-import { pathToCluster } from '../assets/lib/paths';
-import { clusterParams } from '../assets/lib/types';
+import Cluster from '../assets/lib/cluster';
 
 export default class CreateIndex extends Command {
    static override readonly description = 'describe the command here';
@@ -53,23 +52,37 @@ export default class CreateIndex extends Command {
    public async run(): Promise<void> {
       const { flags } = await this.parse(CreateIndex);
 
-      const clusterInfo: clusterParams = {
-         cpus: flags.cpus,
-         database: flags.database,
-         memory: flags.memory,
-         module: flags.module,
-         name: flags.name,
-         nodes: flags.nodes,
-         port: flags.port
-      };
+      // Get cluster
+      const cluster = new Cluster(flags.name);
 
-      const clusterPath = pathToCluster(clusterInfo.name);
+      // Check if the cluster already exists
+      if (cluster.exists()) {
+         return console.log(`\nA cluster with that name already exists try again.\n`);
+      }
 
-      const created = createCluster(clusterInfo, clusterPath);
+      // Create spinner
+      console.log();
+      const spinner = ora('Creating cluster').start();
 
-      if (created) {
+      // Create cluster
+      if (
+         cluster.create({
+            cpus: flags.cpus,
+            database: flags.database,
+            memory: flags.memory,
+            module: flags.module,
+            name: flags.name,
+            nodes: flags.nodes,
+            port: flags.port
+         })
+      ) {
+         // Success spinner
+         spinner.succeed('Successfully created the cluster');
+
          // File location
-         console.log(chalk.green(`\nThe ${flags.name} cluster has been saved to:\n${clusterPath}`));
+         console.log(
+            chalk.green(`\nThe ${cluster.name} cluster has been saved to:\n${cluster.path}`)
+         );
 
          // Show how to start it up
          console.log(
@@ -78,7 +91,7 @@ export default class CreateIndex extends Command {
             )
          );
       } else {
-         console.log(chalk.red('\nFailed to set up cluster\n'));
+         console.log(chalk.red('\nFailed to create a cluster\n'));
       }
    }
 }

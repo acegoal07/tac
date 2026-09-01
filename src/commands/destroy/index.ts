@@ -1,6 +1,8 @@
 import { Args, Command } from '@oclif/core';
+import chalk from 'chalk';
+import ora from 'ora';
 
-import destroyCluster from '../../assets/lib/destroy-cluster';
+import Cluster from '../../assets/lib/cluster';
 
 export default class DestroyIndex extends Command {
    static override readonly args = {
@@ -10,6 +12,29 @@ export default class DestroyIndex extends Command {
 
    public async run(): Promise<void> {
       const { args } = await this.parse(DestroyIndex);
-      destroyCluster(args.name);
+
+      // Get cluster
+      const cluster = new Cluster(args.name);
+
+      // Check that the cluster exits
+      if (!cluster.exists()) {
+         return console.log(chalk.yellow(`\n${cluster.name} isn't a cluster that exists.\n`));
+      }
+
+      // Create spinner
+      console.log();
+      const spinner = ora(`Destroying cluster and it's files`).start();
+
+      // Destroy and delete cluster
+      const outcome = await cluster.destroy();
+
+      // Update spinner with the outcome
+      if (outcome) {
+         spinner.succeed('Successfully destroyed the cluster');
+      } else {
+         spinner.fail('Failed to destroyed the cluster');
+      }
+
+      console.log();
    }
 }

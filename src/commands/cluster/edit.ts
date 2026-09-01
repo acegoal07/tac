@@ -1,9 +1,8 @@
 import { Args, Command, Flags } from '@oclif/core';
+import chalk from 'chalk';
+import ora from 'ora';
 
-import Cluster from '../../assets/lib/cluster';
-import createCluster from '../../assets/lib/create-cluster';
-import destroyCluster from '../../assets/lib/destroy-cluster';
-import { clusterParams } from '../../assets/lib/types';
+import Cluster, { ClusterOptions } from '../../assets/lib/cluster';
 
 export default class Edit extends Command {
    static override readonly args = {
@@ -44,34 +43,64 @@ export default class Edit extends Command {
 
    public async run(): Promise<void> {
       const { args, flags } = await this.parse(Edit);
-      // get cluster data
+
+      // Get cluster
       const cluster = new Cluster(args.name);
 
-      const clusterData: clusterParams = cluster.dump();
+      // Check that cluster exists
+      if (!cluster.exists()) {
+         return console.log(chalk.red(`\nThe cluster you're trying to edit doesn't exists.\n`));
+      }
+
+      // Get cluster information
+      const clusterData: ClusterOptions | null = cluster.dumpInfo();
+
+      // Make sure there is cluster information
+      if (!clusterData) {
+         return console.log(chalk.red(`\nFailed to retrieve cluster information.\n`));
+      }
 
       // merge new data with old
       const updates = Object.fromEntries(
          Object.entries(flags).filter(([, value]) => value !== undefined)
-      ) as Partial<Omit<clusterParams, 'name'>>;
+      ) as Partial<Omit<ClusterOptions, 'name'>>;
 
-      const updatedCluster: clusterParams = {
+      // Merge the options
+      const updatedCluster: ClusterOptions = {
          ...clusterData,
          ...updates
       };
 
       // destroy old cluster if data changed
-      const changed = (Object.keys(clusterData) as Array<keyof clusterParams>).some(
+      const changed = (Object.keys(clusterData) as Array<keyof ClusterOptions>).some(
          (key) => clusterData[key] !== updatedCluster[key]
       );
 
+      // Make sure there is ta least one change
       if (!changed) {
-         console.log('Data has not changed. Nothing to do.\nExiting...');
+         return console.log(chalk.yellow('\nData has not changed. Nothing to do.\nExiting...\n'));
+      }
+
+      // Create spinner
+      console.log();
+      let spinner = ora('Clearing old cluster information').start();
+
+      // Destroy the old cluster
+      const outcome = await cluster.destroy();
+
+      if (outcome) {
+         spinner.succeed('Successfully cleared old cluster information');
+      } else {
+         spinner.fail('Failed to clear old cluster information');
          return;
       }
 
-      await destroyCluster(args.name);
-
-      // create new cluster
-      createCluster(updatedCluster, cluster.path);
+      // Create updated cluster
+      spinner = ora('Updating cluster with new options');
+      if (cluster.create(updatedCluster)) {
+         spinner.succeed('Successfully updated cluster');
+      } else {
+         spinner.fail('Failed to update cluster information');
+      }
    }
 }

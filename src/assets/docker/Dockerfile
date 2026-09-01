@@ -1,3 +1,4 @@
+# Base image
 FROM rockylinux:9.3 AS base
 
 ARG SLURM_VERSION=26.05.1
@@ -88,7 +89,7 @@ RUN echo 'CgroupPlugin=disabled' \
 
 WORKDIR /
 
-
+# Login image
 FROM base AS login
 
 RUN dnf -y install \
@@ -105,8 +106,7 @@ EXPOSE 22
 
 CMD ["/entrypoint.sh"]
 
-
-
+# Computer image
 FROM base AS compute
 
 RUN dnf -y install \
@@ -123,6 +123,7 @@ EXPOSE 22
 
 CMD ["/entrypoint.sh"]
 
+# Database image
 FROM base AS database
 
 RUN dnf -y install \

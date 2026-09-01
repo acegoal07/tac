@@ -44,20 +44,31 @@ export default class ClusterList extends Command {
       for (const name of clusterNames) {
          const cluster = new Cluster(name);
 
+         // Make sure cluster exists
+         if (!cluster.exists()) {
+            continue;
+         }
+
+         // Get cluster information
+         const clusterInfo = cluster.dumpInfo();
+
+         // Make sure there is cluster information
+         if (!clusterInfo) {
+            continue;
+         }
+
+         // Add it to the table
          table.push([
             cluster.name,
-            cluster.module,
-            cluster.port,
-            cluster.cpus,
-            cluster.memory,
-            cluster.nodes,
-            cluster.database ? 'Yes' : 'No'
+            clusterInfo.module,
+            clusterInfo.port,
+            clusterInfo.cpus,
+            clusterInfo.memory,
+            clusterInfo.nodes,
+            clusterInfo.database ? 'Yes' : 'No'
          ]);
       }
 
-      console.log(chalk.bold.green('\nAvailable clusters:\n'));
-      console.log(table.toString());
-
-      console.log();
+      console.log(`\n${table.toString()}\n`);
    }
 }

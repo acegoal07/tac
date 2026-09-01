@@ -1,9 +1,9 @@
 import { Args, Command } from '@oclif/core';
-import { existsSync } from 'node:fs';
+import chalk from 'chalk';
 import { Client } from 'ssh2';
 
+import Cluster from '../assets/lib/cluster';
 import createConnectionObject from '../assets/lib/create-connection-object';
-import { pathToCluster } from '../assets/lib/paths';
 
 export default class Connect extends Command {
    static override readonly args = {
@@ -15,11 +15,10 @@ export default class Connect extends Command {
    public async run(): Promise<void> {
       const { args } = await this.parse(Connect);
 
-      const clusterPath = pathToCluster(args.name);
+      const cluster = new Cluster(args.name);
 
-      if (!existsSync(clusterPath)) {
-         console.log('No cluster exists with that name');
-         return;
+      if (!cluster.exists()) {
+         return console.log(chalk.yellow(`\nNo cluster with that name exists\n`));
       }
 
       const conn = new Client();
@@ -28,8 +27,7 @@ export default class Connect extends Command {
          conn.on('ready', () => {
             conn.shell((err, stream) => {
                if (err) {
-                  reject(err);
-                  return;
+                  return reject(err);
                }
 
                stream.on('data', (data: Buffer) => {

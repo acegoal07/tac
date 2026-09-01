@@ -34,7 +34,7 @@ export default class ClusterStart extends Command {
 
       // Check that a cluster exists
       if (!existsSync(clusterPath)) {
-         return console.log('\nNo cluster exists with that name\n');
+         return console.log(chalk.yellow('\nNo cluster exists with that name\n'));
       }
 
       // service information
