@@ -33,7 +33,6 @@ npm i -g @acegoal07/tac
 - `tac cluster start <cluster_name>`: Start a specific cluster
 - `tac cluster stop <cluster_name>`: Stop a specific cluster
 - `tac cluster edit <cluster_name>`: Edit the configuration of a specific cluster
-   - `--name=<cluster_name>`: Specify the name of the cluster
    - `--nodes=<number_of_nodes>`: Specify the number of nodes in the cluster
    - `--cpus=<cpu_limit>`: Specify the CPU limit for each node
    - `--memory=<memory_limit>`: Specify the memory limit for each node
