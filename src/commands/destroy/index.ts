@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 
 import Cluster from '../../assets/lib/cluster';
+import { dockerUp } from '../../assets/lib/util';
 
 export default class DestroyIndex extends Command {
    static override readonly args = {
@@ -12,6 +13,11 @@ export default class DestroyIndex extends Command {
 
    public async run(): Promise<void> {
       const { args } = await this.parse(DestroyIndex);
+
+      // Check whether docker is running
+      if (!(await dockerUp())) {
+         return console.log(chalk.red('\nDocker needs to be running\n'));
+      }
 
       // Get cluster
       const cluster = new Cluster(args.name);

@@ -3,7 +3,6 @@ import chalk from 'chalk';
 import { Client } from 'ssh2';
 
 import Cluster from '../assets/lib/cluster';
-import createConnectionObject from '../assets/lib/create-connection-object';
 
 export default class Connect extends Command {
    static override readonly args = {
@@ -60,7 +59,7 @@ export default class Connect extends Command {
 
          conn.on('error', reject);
 
-         conn.connect(createConnectionObject(args.name));
+         conn.connect(cluster.connectionInfo());
       });
    }
 }

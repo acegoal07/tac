@@ -1,12 +1,10 @@
 import { Args, Command } from '@oclif/core';
 import chalk from 'chalk';
-import { ps, upAll } from 'docker-compose';
-import Docker from 'dockerode';
-import { existsSync } from 'node:fs';
+import { upAll } from 'docker-compose';
 import ora from 'ora';
 
-import { pathToCluster } from '../../assets/lib/paths';
-import { sshdRunning } from '../../assets/lib/util';
+import Cluster from '../../assets/lib/cluster';
+import { dockerUp, sshdRunning } from '../../assets/lib/util';
 
 export default class ClusterStart extends Command {
    static override readonly args = {
@@ -21,29 +19,20 @@ export default class ClusterStart extends Command {
       const { args } = await this.parse(ClusterStart);
 
       // Check whether docker is running
-      const docker = new Docker();
-
-      try {
-         await docker.ping();
-      } catch {
+      if (!(await dockerUp())) {
          return console.log(chalk.red('\nDocker needs to be running\n'));
       }
 
-      // Path to cluster
-      const clusterPath = pathToCluster(args.name);
+      // Get the cluster
+      const cluster = new Cluster(args.name);
 
       // Check that a cluster exists
-      if (!existsSync(clusterPath)) {
+      if (!cluster.exists()) {
          return console.log(chalk.yellow('\nNo cluster exists with that name\n'));
       }
 
-      // service information
-      const clusterInformation = await ps({ cwd: clusterPath });
-
       // Check if anything within the cluster is running
-      if (
-         !clusterInformation.data.services.every((service) => service.state.toLowerCase() === 'up')
-      ) {
+      if (await cluster.isUp()) {
          return console.log(chalk.red(`\nThe cluster is already running\n`));
       }
 
@@ -56,7 +45,7 @@ export default class ClusterStart extends Command {
 
       let spinner = ora('Booting cluster').start();
 
-      await upAll({ cwd: clusterPath })
+      await upAll({ cwd: cluster.path })
          .then(async () => {
             spinner.succeed('Successfully booted cluster');
             spinner = ora('Running initialiser scripts').start();

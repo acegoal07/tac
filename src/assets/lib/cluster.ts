@@ -1,4 +1,4 @@
-import { down } from 'docker-compose';
+import { down, ps } from 'docker-compose';
 import { Eta } from 'eta';
 import { randomBytes } from 'node:crypto';
 import { appendFileSync, cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -30,6 +30,29 @@ export default class Cluster {
       this.name = name;
       this.path = pathToCluster(name);
       this.options = this.readInfo();
+   }
+
+   /**
+    * Creates the SSH connection information for the cluster
+    * @returns {{
+    *    host: string;
+    *    port: number;
+    *    privateKey: string;
+    *    username: string;
+    * }} The SSH connection information
+    */
+   connectionInfo(): {
+      host: string;
+      port: number;
+      privateKey: string;
+      username: string;
+   } {
+      return {
+         host: 'localhost',
+         port: this.options?.port ?? 2200,
+         privateKey: readFileSync(join(this.path, 'cluster_key'), 'utf8'),
+         username: 'dev'
+      };
    }
 
    /**
@@ -155,6 +178,18 @@ export default class Cluster {
     */
    exists(): boolean {
       return this.options !== null;
+   }
+
+   /**
+    * Checks whether or not all the containers in a cluster is running
+    * @returns {boolean} Whether or not the cluster is running
+    */
+   async isUp(): Promise<boolean> {
+      const clusterInformation = await ps({ cwd: this.path });
+
+      return !clusterInformation.data.services.every(
+         (service) => service.state.toLowerCase() === 'up'
+      );
    }
 
    /**

@@ -1,11 +1,10 @@
 import { Args, Command } from '@oclif/core';
 import chalk from 'chalk';
-import { ps, stop } from 'docker-compose';
-import Docker from 'dockerode';
-import { existsSync } from 'node:fs';
+import { stop } from 'docker-compose';
 import ora from 'ora';
 
-import { pathToCluster } from '../../assets/lib/paths';
+import Cluster from '../../assets/lib/cluster';
+import { dockerUp } from '../../assets/lib/util';
 
 export default class ClusterStop extends Command {
    static override readonly args = {
@@ -17,29 +16,20 @@ export default class ClusterStop extends Command {
       const { args } = await this.parse(ClusterStop);
 
       // Check whether docker is running
-      const docker = new Docker();
-
-      try {
-         await docker.ping();
-      } catch {
+      if (!(await dockerUp())) {
          return console.log(chalk.red('\nDocker needs to be running\n'));
       }
 
-      // Path to cluster
-      const clusterPath = pathToCluster(args.name);
+      // Get the cluster
+      const cluster = new Cluster(args.name);
 
       // Check that a cluster exists
-      if (!existsSync(clusterPath)) {
-         return console.log(chalk.yellow(`\nNo cluster exists with that name\n`));
+      if (!cluster.exists()) {
+         return console.log(chalk.yellow('\nNo cluster exists with that name\n'));
       }
 
-      // service information
-      const clusterInformation = await ps({ cwd: clusterPath });
-
       // Check if anything within the cluster is running
-      if (
-         !clusterInformation.data.services.every((service) => service.state.toLowerCase() !== 'up')
-      ) {
+      if (!(await cluster.isUp())) {
          return console.log(chalk.red(`\nThe cluster isn't running\n`));
       }
 
@@ -47,7 +37,7 @@ export default class ClusterStop extends Command {
       console.log();
       const spinner = ora('Stopping the cluster').start();
 
-      await stop({ cwd: clusterPath })
+      await stop({ cwd: cluster.path })
          .catch((error) => {
             spinner.fail('Failed to stop cluster');
             return console.error(

@@ -1,7 +1,8 @@
+import Dockerode from 'dockerode';
 import { appendFileSync, chmodSync, writeFileSync } from 'node:fs';
 import { Client, utils } from 'ssh2';
 
-import createConnectionObject from './create-connection-object';
+import Cluster from './cluster';
 
 /**
  * Creates the name of a node using it's index and has option for more padding before the number
@@ -40,6 +41,7 @@ export function createKeyPair(authorizedKeysPath: string, destination: string) {
 export function sshdRunning(name: string, timeout = 20_000): Promise<boolean> {
    return new Promise((resolve) => {
       const deadline = Date.now() + timeout;
+      const cluster = new Cluster(name);
       let resolved = false;
 
       const finish = (result: boolean) => {
@@ -80,9 +82,24 @@ export function sshdRunning(name: string, timeout = 20_000): Promise<boolean> {
             }
          });
 
-         conn.connect(createConnectionObject(name));
+         conn.connect(cluster.connectionInfo());
       };
 
       check();
    });
+}
+
+/**
+ * Checks whether or not docker is running on the system
+ * @returns {boolean} Whether or not docker is running
+ */
+export async function dockerUp(): Promise<boolean> {
+   const docker = new Dockerode();
+
+   try {
+      await docker.ping();
+      return true;
+   } catch {
+      return false;
+   }
 }
