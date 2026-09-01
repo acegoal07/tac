@@ -27,7 +27,8 @@ export default class CreateIndex extends Command {
       module: Flags.string({
          char: 'l',
          default: 'lmod',
-         description: 'The module loader type to use in the cluster'
+         description: 'The module loader type to use in the cluster',
+         options: ['lmod', 'em']
       }),
       name: Flags.string({
          char: 'n',

@@ -1,15 +1,7 @@
 import { down } from 'docker-compose';
 import { Eta } from 'eta';
 import { randomBytes } from 'node:crypto';
-import {
-   appendFileSync,
-   copyFileSync,
-   cpSync,
-   mkdirSync,
-   readFileSync,
-   rmSync,
-   writeFileSync
-} from 'node:fs';
+import { appendFileSync, cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { pathToCLIAssets, pathToCluster } from './paths';
@@ -95,26 +87,10 @@ export default class Cluster {
          writeFileSync(join(this.path, 'compose.yaml'), eta.render('creation', options));
 
          // Copy all required docker files
-         copyFileSync(
-            pathToCLIAssets(__dirname, 'docker', 'Dockerfile'),
-            join(this.path, 'Dockerfile')
-         );
-         copyFileSync(
-            pathToCLIAssets(__dirname, 'docker', 'entrypoint.sh'),
-            join(this.path, 'entrypoint.sh')
-         );
-         copyFileSync(
-            pathToCLIAssets(__dirname, 'docker', 'entrypoint-database.sh'),
-            join(this.path, 'entrypoint-database.sh')
-         );
-         copyFileSync(
-            pathToCLIAssets(__dirname, 'docker', 'entrypoint-login.sh'),
-            join(this.path, 'entrypoint-login.sh')
-         );
-         copyFileSync(
-            pathToCLIAssets(__dirname, 'docker', 'entrypoint-compute.sh'),
-            join(this.path, 'entrypoint-compute.sh')
-         );
+         cpSync(pathToCLIAssets(__dirname, 'docker'), this.path, {
+            recursive: true
+         });
+
          cpSync(pathToCLIAssets(__dirname, 'setup_scripts'), join(this.path, 'setup_scripts'), {
             recursive: true
          });
@@ -150,7 +126,7 @@ export default class Cluster {
    async destroy(): Promise<boolean> {
       try {
          await down({
-            commandOptions: ['--volumes', ['--rmi', 'all']],
+            commandOptions: ['-v', ['--rmi', 'all']],
             cwd: this.path
          });
 

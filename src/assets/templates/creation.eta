@@ -7,11 +7,25 @@ services:
          target: login
 
       image: <%= it.name %>-login
-
       container_name: <%= it.name %>-login
       hostname: login
+
+<% if (it.database) { %>
+      depends_on:
+         database:
+            condition: service_healthy
+<% } %>
+
+      healthcheck:
+         test: ["CMD", "scontrol", "ping"]
+         interval: 5s
+         timeout: 5s
+         retries: 20
+         start_period: 10s
+
       ports:
          - "<%= it.port %>:22"
+
       environment:
          MODULE_FRAMEWORK: <%= it.module %>
 
@@ -24,17 +38,23 @@ services:
          - ./hostkeys/login_ssh_host_ed25519_key.pub:/etc/ssh/ssh_host_ed25519_key.pub:ro
          - ./munge.key:/tmp/munge.key:ro
          - ./conf/slurm.conf:/tmp/conf/slurm.conf:ro
+
 <% if (it.database) { %>
          - ./conf/slurmdbd.conf:/tmp/conf/slurmdbd.conf:ro
 <% } %>
+
 <% if (it.module === "em") { %>
          - ./setup_scripts/environment_modules.sh:/tmp/setup_scripts/environment-modules.sh:ro
 <% } %>
+
 <% if (it.module === "lmod") { %>
          - ./setup_scripts/lmod.sh:/tmp/setup_scripts/lmod.sh:ro
 <% } %>
+
       networks:
          - cluster
+
+
 <% for (let i = 1; i <= it.nodes; i++) { %>
    node<%= String(i).padStart(2, "0") %>:
       build:
@@ -46,8 +66,11 @@ services:
 
       hostname: node<%= String(i).padStart(2, "0") %>
 
-      mem_limit: <%= it.memory %>m
+      depends_on:
+         login:
+            condition: service_healthy
 
+      mem_limit: <%= it.memory %>m
       cpus: <%= it.cpus %>
 
       environment:
@@ -62,27 +85,36 @@ services:
          - ./hostkeys/node<%= String(i).padStart(2, "0") %>_ssh_host_ed25519_key.pub:/etc/ssh/ssh_host_ed25519_key.pub:ro
          - ./munge.key:/tmp/munge.key:ro
          - ./conf/slurm.conf:/tmp/conf/slurm.conf:ro
+
 <% if (it.module === "em") { %>
          - ./setup_scripts/environment_modules.sh:/tmp/setup_scripts/environment_modules.sh:ro
 <% } %>
+
 <% if (it.module === "lmod") { %>
          - ./setup_scripts/lmod.sh:/tmp/setup_scripts/lmod.sh:ro
 <% } %>
 
       networks:
-         - cluster   
+         - cluster
 <% } %>
+
+
 <% if (it.database) { %>
    database:
       build:
          context: .
-         target: compute
+         target: database
 
-      image: <%= it.name %>-compute
+      image: <%= it.name %>-database
       container_name: <%= it.name %>-database
       hostname: database
-      environment:
-         MODULE_FRAMEWORK: <%= it.module %>
+
+      healthcheck:
+         test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+         interval: 5s
+         timeout: 5s
+         retries: 20
+         start_period: 10s
 
       volumes:
          - ./conf:/tmp/conf:ro
@@ -95,8 +127,10 @@ services:
          - cluster
 <% } %>
 
+
 volumes:
    home:
+
 
 networks:
    cluster:

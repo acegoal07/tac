@@ -57,12 +57,6 @@ export default class ClusterStart extends Command {
       let spinner = ora('Booting cluster').start();
 
       await upAll({ cwd: clusterPath })
-         .catch((error) => {
-            spinner.fail('Failed to boot cluster');
-            return console.error(
-               `\nAn error occurred while booting the cluster, ERROR:\n${error}\n`
-            );
-         })
          .then(async () => {
             spinner.succeed('Successfully booted cluster');
             spinner = ora('Running initialiser scripts').start();
@@ -74,14 +68,24 @@ export default class ClusterStart extends Command {
                      `\n${args.name} has been started and can now be connect to using:\ntac connect ${args.name}\n`
                   )
                );
+               console.log(
+                  chalk.yellow(
+                     `Some nodes might still be booting still so might not be accessible straight away\n`
+                  )
+               );
             } else {
                spinner.fail('SSH connection timed out');
                console.log(
                   chalk.yellow(
-                     `\n${args.name} is taking a while to start the SSH daemon, wait a few minutes and then try connecting using: \ntac connect ${args.name}\n`
+                     `\n${args.name} is taking a while to start the SSH daemon\nWait a few minutes and then try connecting using: \ntac connect ${args.name}\n`
                   )
                );
             }
+         })
+         .catch((error) => {
+            spinner.fail('Failed to boot cluster');
+            console.error('\nAn error occurred while booting the cluster, ERROR:\n');
+            return console.log(error);
          });
    }
 }
