@@ -26,8 +26,7 @@ export default class Edit extends Command {
       }),
       module: Flags.string({
          char: 'l',
-         description: 'The module loader type to use in the cluster',
-         options: ['lmod', 'em']
+         description: 'The module loader type to use in the cluster'
       }),
       nodes: Flags.integer({
          char: 'k',
