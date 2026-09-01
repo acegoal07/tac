@@ -85,10 +85,8 @@ export default class Edit extends Command {
       console.log();
       let spinner = ora('Clearing old cluster information').start();
 
-      // Destroy the old cluster
-      const outcome = await cluster.destroy();
-
-      if (outcome) {
+      // Destroys the cluster
+      if (await cluster.destroy()) {
          spinner.succeed('Successfully cleared old cluster information');
       } else {
          spinner.fail('Failed to clear old cluster information');
