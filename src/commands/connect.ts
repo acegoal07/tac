@@ -1,9 +1,9 @@
 import { Args, Command } from '@oclif/core';
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import chalk from 'chalk';
 import { Client } from 'ssh2';
 
-import { pathToCluster } from '../assets/lib/paths';
+import Cluster from '../assets/lib/cluster';
+import createConnectionObject from '../assets/lib/create-connection-object';
 
 export default class Connect extends Command {
    static override readonly args = {
@@ -15,65 +15,52 @@ export default class Connect extends Command {
    public async run(): Promise<void> {
       const { args } = await this.parse(Connect);
 
-      // Path to cluster
-      const clusterPath = pathToCluster(args.name);
+      const cluster = new Cluster(args.name);
 
-      // Check that a cluster exists
-      if (!existsSync(clusterPath)) {
-         return console.log('No cluster exists with that name');
+      if (!cluster.exists()) {
+         return console.log(chalk.yellow(`\nNo cluster with that name exists\n`));
       }
 
-      // Create SSH client
       const conn = new Client();
 
-      // Setup handler for connection
-      conn.on('ready', () => {
-         conn.shell((err, stream) => {
-            if (err) {
-               this.error(err);
-            }
+      await new Promise<void>((resolve, reject) => {
+         conn.on('ready', () => {
+            conn.shell((err, stream) => {
+               if (err) {
+                  return reject(err);
+               }
 
-            // Server -> terminal
-            stream.on('data', (data: Buffer) => {
-               process.stdout.write(data);
-            });
+               stream.on('data', (data: Buffer) => {
+                  process.stdout.write(data);
+               });
 
-            // Terminal -> server
-            process.stdin.on('data', (data: Buffer) => {
-               stream.write(data);
-            });
+               process.stdin.on('data', (data: Buffer) => {
+                  stream.write(data);
+               });
 
-            // Handle Ctrl+C / terminal exit
-            process.stdin.setRawMode?.(true);
-            process.stdin.resume();
+               process.stdin.setRawMode?.(true);
+               process.stdin.resume();
 
-            // Handle end
-            process.stdin.on('end', () => {
-               stream.end();
-               conn.end();
-            });
+               process.stdin.on('end', () => {
+                  stream.end();
+                  conn.end();
+               });
 
-            // Handle close
-            stream.on('close', () => {
-               process.stdin.setRawMode?.(false);
-               conn.end();
+               stream.on('close', () => {
+                  process.stdin.setRawMode?.(false);
+                  process.stdin.pause();
+                  conn.end();
+
+                  resolve();
+               });
+
+               stream.on('error', reject);
             });
          });
-      });
 
-      // Handle errors for the SSH client
-      conn.on('error', (_error) => {
-         console.log('Make sure the cluster you are trying to connect to is running');
-      });
+         conn.on('error', reject);
 
-      // Connect to the SSH client
-      conn.connect({
-         host: 'localhost',
-         port: existsSync(join(clusterPath, 'port'))
-            ? Number(readFileSync(join(clusterPath, 'port')))
-            : 2200,
-         privateKey: readFileSync(join(clusterPath, 'cluster_key')),
-         username: 'dev'
+         conn.connect(createConnectionObject(args.name));
       });
    }
 }

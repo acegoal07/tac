@@ -1,10 +1,8 @@
 import { Args, Command } from '@oclif/core';
 import chalk from 'chalk';
-import { down } from 'docker-compose';
-import { existsSync, rmSync } from 'node:fs';
 import ora from 'ora';
 
-import { pathToCluster } from '../../assets/lib/paths';
+import Cluster from '../../assets/lib/cluster';
 
 export default class DestroyIndex extends Command {
    static override readonly args = {
@@ -14,30 +12,29 @@ export default class DestroyIndex extends Command {
 
    public async run(): Promise<void> {
       const { args } = await this.parse(DestroyIndex);
-      const clusterPath = pathToCluster(args.name);
 
-      // Check if the cluster exists
-      if (!existsSync(clusterPath)) {
-         return console.log(`No cluster exists with that name`);
+      // Get cluster
+      const cluster = new Cluster(args.name);
+
+      // Check that the cluster exits
+      if (!cluster.exists()) {
+         return console.log(chalk.yellow(`\n${cluster.name} isn't a cluster that exists.\n`));
+      }
+
+      // Create spinner
+      console.log();
+      const spinner = ora(`Destroying cluster and it's files`).start();
+
+      // Destroy and delete cluster
+      const outcome = await cluster.destroy();
+
+      // Update spinner with the outcome
+      if (outcome) {
+         spinner.succeed('Successfully destroyed the cluster');
+      } else {
+         spinner.fail('Failed to destroyed the cluster');
       }
 
       console.log();
-      const spinner = ora('Removing cluster').start();
-
-      // Handle deleting the container and removing it's files
-      await down({
-         commandOptions: ['--volumes'],
-         cwd: clusterPath
-      })
-         .then(() => {
-            rmSync(clusterPath, {
-               force: true,
-               recursive: true
-            });
-         })
-         .then(() => {
-            spinner.succeed('Cluster removed');
-            console.log(chalk.green(`\nRemoved the cluster ${args.name}.\n`));
-         });
    }
 }

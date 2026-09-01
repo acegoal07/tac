@@ -31,7 +31,7 @@ export default class DestroyAll extends Command {
       await Promise.all(
          clusters.map(async (cluster) => {
             await down({
-               commandOptions: ['--volumes'],
+               commandOptions: ['--volumes', ['--rmi', 'all']],
                cwd: cluster
             });
 
