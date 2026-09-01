@@ -2,9 +2,9 @@ import { Command, Flags } from '@oclif/core';
 import chalk from 'chalk';
 import ora from 'ora';
 
-import Cluster from '../assets/lib/cluster';
+import Cluster from '../../assets/lib/cluster';
 
-export default class CreateIndex extends Command {
+export default class ClusterCreate extends Command {
    static override readonly description = 'describe the command here';
    static override readonly flags = {
       cpus: Flags.integer({
@@ -50,7 +50,7 @@ export default class CreateIndex extends Command {
    };
 
    public async run(): Promise<void> {
-      const { flags } = await this.parse(CreateIndex);
+      const { flags } = await this.parse(ClusterCreate);
 
       // Get cluster
       const cluster = new Cluster(flags.name);

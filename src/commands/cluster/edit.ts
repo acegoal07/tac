@@ -4,7 +4,7 @@ import ora from 'ora';
 
 import Cluster, { ClusterOptions } from '../../assets/lib/cluster';
 
-export default class Edit extends Command {
+export default class ClusterEdit extends Command {
    static override readonly args = {
       name: Args.string({ description: 'The name of the cluster to edit', required: true })
    };
@@ -42,7 +42,7 @@ export default class Edit extends Command {
    };
 
    public async run(): Promise<void> {
-      const { args, flags } = await this.parse(Edit);
+      const { args, flags } = await this.parse(ClusterEdit);
 
       // Get cluster
       const cluster = new Cluster(args.name);

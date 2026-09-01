@@ -60,7 +60,15 @@
       "commands": "./dist/commands",
       "plugins": [
          "@oclif/plugin-help"
-      ]
+      ],
+      "topics": {
+         "cluster": {
+            "description": "Commands used to create and manipulate clusters"
+         },
+         "destroy": {
+            "description": "Destroy a cluster and delete it's files"
+         }
+      }
    },
    "scripts": {
       "build": "shx rm -rf dist && tsc -b && shx mkdir -p dist/assets && shx cp -r src/assets/setup_scripts dist/assets/ && shx cp -r src/assets/templates dist/assets/ && shx cp -r src/assets/docker dist/assets/",
