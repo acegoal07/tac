@@ -3,7 +3,7 @@ import { Command, Flags, ux } from '@oclif/core';
 import Cluster from '../../assets/lib/cluster';
 
 export default class ClusterCreate extends Command {
-   static override readonly description = 'describe the command here';
+   static override readonly description = 'Creates a clusters files using the options provided';
    static override readonly flags = {
       cpus: Flags.integer({
          char: 'c',
