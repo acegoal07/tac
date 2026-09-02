@@ -141,6 +141,11 @@ export default class Cluster {
 
          return true;
       } catch {
+         rmSync(this.path, {
+            force: true,
+            recursive: true
+         });
+
          return false;
       }
    }
@@ -160,6 +165,8 @@ export default class Cluster {
             force: true,
             recursive: true
          });
+
+         this.options = null;
 
          return true;
       } catch {
