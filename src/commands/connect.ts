@@ -1,9 +1,8 @@
-import { Args, Command } from '@oclif/core';
-import chalk from 'chalk';
+import { Args, Command, ux } from '@oclif/core';
 import { Client } from 'ssh2';
 
 import Cluster from '../assets/lib/cluster';
-import createConnectionObject from '../assets/lib/create-connection-object';
+import { dockerUp } from '../assets/lib/util';
 
 export default class Connect extends Command {
    static override readonly args = {
@@ -15,14 +14,30 @@ export default class Connect extends Command {
    public async run(): Promise<void> {
       const { args } = await this.parse(Connect);
 
-      const cluster = new Cluster(args.name);
-
-      if (!cluster.exists()) {
-         return console.log(chalk.yellow(`\nNo cluster with that name exists\n`));
+      // Check whether docker is running
+      if (!(await dockerUp())) {
+         return console.log(ux.colorize('red', '\nDocker needs to be running\n'));
       }
 
+      // Get cluster
+      const cluster = new Cluster(args.name);
+
+      // Checks whether the cluster exists
+      if (!cluster.exists()) {
+         return console.log(ux.colorize('yellow', '\nNo cluster with that name exists\n'));
+      }
+
+      // Check that the cluster is running
+      if (!(await cluster.isUp())) {
+         return console.log(
+            ux.colorize('red', '\nThe cluster needs to running to be able to connect\n')
+         );
+      }
+
+      // Get SHH client
       const conn = new Client();
 
+      // Handle SSH client
       await new Promise<void>((resolve, reject) => {
          conn.on('ready', () => {
             conn.shell((err, stream) => {
@@ -58,9 +73,11 @@ export default class Connect extends Command {
             });
          });
 
+         // Handle SSH errors
          conn.on('error', reject);
 
-         conn.connect(createConnectionObject(args.name));
+         // Connect to SSH
+         conn.connect(cluster.connectionInfo());
       });
    }
 }

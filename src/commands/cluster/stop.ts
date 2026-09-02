@@ -1,11 +1,8 @@
-import { Args, Command } from '@oclif/core';
-import chalk from 'chalk';
-import { ps, stop } from 'docker-compose';
-import Docker from 'dockerode';
-import { existsSync } from 'node:fs';
-import ora from 'ora';
+import { Args, Command, ux } from '@oclif/core';
+import { stop } from 'docker-compose';
 
-import { pathToCluster } from '../../assets/lib/paths';
+import Cluster from '../../assets/lib/cluster';
+import { dockerUp } from '../../assets/lib/util';
 
 export default class ClusterStop extends Command {
    static override readonly args = {
@@ -17,46 +14,38 @@ export default class ClusterStop extends Command {
       const { args } = await this.parse(ClusterStop);
 
       // Check whether docker is running
-      const docker = new Docker();
-
-      try {
-         await docker.ping();
-      } catch {
-         return console.log(chalk.red('\nDocker needs to be running\n'));
+      if (!(await dockerUp())) {
+         return console.log(ux.colorize('red', '\nDocker needs to be running\n'));
       }
 
-      // Path to cluster
-      const clusterPath = pathToCluster(args.name);
+      // Get the cluster
+      const cluster = new Cluster(args.name);
 
       // Check that a cluster exists
-      if (!existsSync(clusterPath)) {
-         return console.log(chalk.yellow(`\nNo cluster exists with that name\n`));
+      if (!cluster.exists()) {
+         return console.log(ux.colorize('yellow', '\nNo cluster exists with that name\n'));
       }
 
-      // service information
-      const clusterInformation = await ps({ cwd: clusterPath });
-
       // Check if anything within the cluster is running
-      if (
-         !clusterInformation.data.services.every((service) => service.state.toLowerCase() !== 'up')
-      ) {
-         return console.log(chalk.red(`\nThe cluster isn't running\n`));
+      if (!(await cluster.isUp())) {
+         return console.log(ux.colorize('red', "\nThe cluster isn't running\n"));
       }
 
       // Stop the cluster
       console.log();
-      const spinner = ora('Stopping the cluster').start();
+      ux.action.start('Stopping the cluster');
 
-      await stop({ cwd: clusterPath })
+      await stop({ cwd: cluster.path })
          .catch((error) => {
-            spinner.fail('Failed to stop cluster');
-            return console.error(
-               `\nAn error occurred while initialising the cluster, ERROR:\n ${error}\n`
+            ux.action.stop('Failed');
+            console.error(
+               ux.colorize('red', '\nAn error occurred while initialising the cluster, ERROR:\n')
             );
+            return console.log(error);
          })
          .then(() => {
-            spinner.succeed('Cluster has been stopped');
-            console.log(chalk.green(`\n${args.name} has been stopped\n`));
+            ux.action.stop('Successful');
+            console.log(ux.colorize('green', `\n${args.name} has been stopped\n`));
          });
    }
 }

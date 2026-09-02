@@ -1,5 +1,4 @@
-import { Command } from '@oclif/core';
-import chalk from 'chalk';
+import { Command, ux } from '@oclif/core';
 import Table from 'cli-table3';
 import { existsSync, readdirSync } from 'node:fs';
 
@@ -25,19 +24,19 @@ export default class ClusterList extends Command {
 
       // Makes sure there is at least one cluster
       if (clusterNames.length === 0) {
-         return console.log(chalk.bold.green(`\nNo available clusters\n`));
+         return console.log(ux.colorize('green', '\nNo available clusters\n'));
       }
 
       const table = new Table({
          colWidths: [20, 15, 10, 8, 12, 8, 12],
          head: [
-            chalk.bold.cyan('Name'),
-            chalk.bold.cyan('Module'),
-            chalk.bold.cyan('Port'),
-            chalk.bold.cyan('CPUs'),
-            chalk.bold.cyan('Memory'),
-            chalk.bold.cyan('Nodes'),
-            chalk.bold.cyan('Database')
+            ux.colorize('cyan', 'Name'),
+            ux.colorize('cyan', 'Module'),
+            ux.colorize('cyan', 'Port'),
+            ux.colorize('cyan', 'CPUs'),
+            ux.colorize('cyan', 'Memory'),
+            ux.colorize('cyan', 'Nodes'),
+            ux.colorize('cyan', 'Database')
          ]
       });
 

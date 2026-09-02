@@ -1,10 +1,8 @@
-import { Args, Command, Flags } from '@oclif/core';
-import chalk from 'chalk';
-import ora from 'ora';
+import { Args, Command, Flags, ux } from '@oclif/core';
 
 import Cluster, { ClusterOptions } from '../../assets/lib/cluster';
 
-export default class Edit extends Command {
+export default class ClusterEdit extends Command {
    static override readonly args = {
       name: Args.string({ description: 'The name of the cluster to edit', required: true })
    };
@@ -42,14 +40,16 @@ export default class Edit extends Command {
    };
 
    public async run(): Promise<void> {
-      const { args, flags } = await this.parse(Edit);
+      const { args, flags } = await this.parse(ClusterEdit);
 
       // Get cluster
       const cluster = new Cluster(args.name);
 
       // Check that cluster exists
       if (!cluster.exists()) {
-         return console.log(chalk.red(`\nThe cluster you're trying to edit doesn't exists.\n`));
+         return console.log(
+            ux.colorize('red', "\nThe cluster you're trying to edit doesn't exists.\n")
+         );
       }
 
       // Get cluster information
@@ -57,7 +57,7 @@ export default class Edit extends Command {
 
       // Make sure there is cluster information
       if (!clusterData) {
-         return console.log(chalk.red(`\nFailed to retrieve cluster information.\n`));
+         return console.log(ux.colorize('red', '\nFailed to retrieve cluster information.\n'));
       }
 
       // merge new data with old
@@ -78,29 +78,27 @@ export default class Edit extends Command {
 
       // Make sure there is ta least one change
       if (!changed) {
-         return console.log(chalk.yellow('\nData has not changed. Nothing to do.\nExiting...\n'));
+         return console.log(ux.colorize('yellow', '\nNo changes were made so canceling update.\n'));
       }
 
       // Create spinner
       console.log();
-      let spinner = ora('Clearing old cluster information').start();
+      ux.action.start('Clearing old cluster information');
 
-      // Destroy the old cluster
-      const outcome = await cluster.destroy();
-
-      if (outcome) {
-         spinner.succeed('Successfully cleared old cluster information');
+      // Destroys the cluster
+      if (await cluster.destroy()) {
+         ux.action.stop('Successful');
       } else {
-         spinner.fail('Failed to clear old cluster information');
+         ux.action.stop('Failed');
          return;
       }
 
       // Create updated cluster
-      spinner = ora('Updating cluster with new options');
+      ux.action.start('Updating cluster with new options');
       if (cluster.create(updatedCluster)) {
-         spinner.succeed('Successfully updated cluster');
+         ux.action.stop('Successful');
       } else {
-         spinner.fail('Failed to update cluster information');
+         ux.action.stop('Failed');
       }
    }
 }

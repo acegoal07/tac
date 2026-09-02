@@ -9,7 +9,6 @@ RUN dnf -y install dnf-plugins-core && \
     dnf -y update && \
     dnf clean all
 
-
 RUN dnf -y install \
     gcc \
     gcc-c++ \
