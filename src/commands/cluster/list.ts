@@ -27,10 +27,11 @@ export default class ClusterList extends Command {
          return console.log(ux.colorize('green', '\nNo available clusters\n'));
       }
 
+      // Create table layout
       const table = new Table({
-         colWidths: [20, 15, 10, 8, 12, 8, 12],
          head: [
             ux.colorize('cyan', 'Name'),
+            ux.colorize('cyan', 'Up'),
             ux.colorize('cyan', 'Module'),
             ux.colorize('cyan', 'Port'),
             ux.colorize('cyan', 'CPUs'),
@@ -40,33 +41,37 @@ export default class ClusterList extends Command {
          ]
       });
 
-      for (const name of clusterNames) {
-         const cluster = new Cluster(name);
+      // Add information to table
+      await Promise.all(
+         clusterNames.map(async (name) => {
+            const cluster = new Cluster(name);
 
-         // Make sure cluster exists
-         if (!cluster.exists()) {
-            continue;
-         }
+            // Make sure cluster exists
+            if (!cluster.exists()) {
+               return;
+            }
 
-         // Get cluster information
-         const clusterInfo = cluster.dumpInfo();
+            // Get cluster information
+            const clusterInfo = cluster.dumpInfo();
 
-         // Make sure there is cluster information
-         if (!clusterInfo) {
-            continue;
-         }
+            // Make sure there is cluster information
+            if (!clusterInfo) {
+               return;
+            }
 
-         // Add it to the table
-         table.push([
-            cluster.name,
-            clusterInfo.module,
-            clusterInfo.port,
-            clusterInfo.cpus,
-            clusterInfo.memory,
-            clusterInfo.nodes,
-            clusterInfo.database ? 'Yes' : 'No'
-         ]);
-      }
+            // Add it to the table
+            table.push([
+               cluster.name,
+               (await cluster.isUp()) ? ux.colorize('green', 'Yes') : ux.colorize('red', 'No'),
+               clusterInfo.module,
+               clusterInfo.port,
+               clusterInfo.cpus,
+               clusterInfo.memory,
+               clusterInfo.nodes,
+               clusterInfo.database ? 'Yes' : 'No'
+            ]);
+         })
+      );
 
       console.log(`\n${table.toString()}\n`);
    }

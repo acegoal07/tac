@@ -36,9 +36,9 @@ export default class DestroyIndex extends Command {
 
       // Update spinner with the outcome
       if (outcome) {
-         ux.action.stop('Successful');
+         ux.action.stop(ux.colorize('green', 'Successful'));
       } else {
-         ux.action.stop('Failed');
+         ux.action.stop(ux.colorize('red', 'Failed'));
       }
 
       console.log();

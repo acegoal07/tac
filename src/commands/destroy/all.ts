@@ -39,7 +39,7 @@ export default class DestroyAll extends Command {
             await new Cluster(name).destroy();
          })
       ).then(() => {
-         ux.action.stop('Successful');
+         ux.action.stop(ux.colorize('green', 'Successful'));
          console.log(
             ux.colorize(
                'green',

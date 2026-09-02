@@ -41,16 +41,16 @@ export default class ClusterStart extends Command {
          )
       );
 
+      // Start cluster
       ux.action.start('Booting cluster');
-
       await cluster
          .start()
          .then(async () => {
-            ux.action.stop('Successful');
+            ux.action.stop(ux.colorize('green', 'Successful'));
             ux.action.start('Running initialiser scripts');
             const running = await sshdRunning(args.name);
             if (running) {
-               ux.action.stop('successful');
+               ux.action.stop(ux.colorize('green', 'Successful'));
                console.log(
                   ux.colorize(
                      'green',
@@ -64,7 +64,7 @@ export default class ClusterStart extends Command {
                   )
                );
             } else {
-               ux.action.stop('Timed out');
+               ux.action.stop(ux.colorize('red', 'Timed out'));
                console.log(
                   ux.colorize(
                      'yellow',
@@ -74,7 +74,7 @@ export default class ClusterStart extends Command {
             }
          })
          .catch((error) => {
-            ux.action.stop('Failed');
+            ux.action.stop(ux.colorize('red', 'Failed'));
             console.error(
                ux.colorize('red', '\nAn error occurred while booting the cluster, ERROR:\n')
             );
