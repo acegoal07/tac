@@ -89,18 +89,18 @@ export default class ClusterEdit extends Command {
 
       // Destroys the cluster
       if (await cluster.destroy()) {
-         ux.action.stop('Successful');
+         ux.action.stop(ux.colorize('green', 'Successful'));
       } else {
-         ux.action.stop('Failed');
+         ux.action.stop(ux.colorize('red', 'Failed'));
          return;
       }
 
       // Create updated cluster
       ux.action.start('Updating cluster with new options');
       if (cluster.create(updatedCluster)) {
-         ux.action.stop('Successful');
+         ux.action.stop(ux.colorize('green', 'Successful'));
       } else {
-         ux.action.stop('Failed');
+         ux.action.stop(ux.colorize('red', 'Failed'));
       }
    }
 }

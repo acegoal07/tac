@@ -37,14 +37,14 @@ export default class ClusterStop extends Command {
       await cluster
          .stop()
          .catch((error) => {
-            ux.action.stop('Failed');
+            ux.action.stop(ux.colorize('red', 'Failed'));
             console.error(
                ux.colorize('red', '\nAn error occurred while initialising the cluster, ERROR:\n')
             );
             return console.log(error);
          })
          .then(() => {
-            ux.action.stop('Successful');
+            ux.action.stop(ux.colorize('green', 'Successful'));
             console.log(ux.colorize('green', `\n${args.name} has been stopped\n`));
          });
    }

@@ -75,7 +75,7 @@ export default class ClusterCreate extends Command {
          })
       ) {
          // Success spinner
-         ux.action.stop('successful');
+         ux.action.stop(ux.colorize('green', 'successful'));
 
          // File location
          console.log(
@@ -93,7 +93,7 @@ export default class ClusterCreate extends Command {
             )
          );
       } else {
-         ux.action.stop('Failed');
+         ux.action.stop(ux.colorize('red', 'Failed'));
          console.log(ux.colorize('red', '\nFailed to create a cluster\n'));
       }
    }
