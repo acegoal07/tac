@@ -31,15 +31,13 @@
       "node": ">=24.0.0"
    },
    "dependencies": {
-      "@oclif/core": "^4",
-      "@oclif/plugin-help": "^6",
-      "chalk": "^6",
+      "@oclif/core": "^5.0.0",
+      "@oclif/plugin-help": "^7.0.0",
       "cli-table3": "^0.6.5",
       "docker-compose": "^1.4.2",
       "dockerode": "^5.0.1",
       "env-paths": "^4",
       "eta": "^4.6.0",
-      "ora": "^9",
       "ssh2": "^1.17.0"
    },
    "devDependencies": {
@@ -49,9 +47,9 @@
       "eslint": "^9",
       "eslint-config-oclif": "^6",
       "eslint-config-prettier": "^10",
-      "oclif": "^4",
+      "oclif": "^5.0.0",
       "prettier": "^3",
-      "shx": "^0.3.3",
+      "shx": "^0.4.0",
       "typescript": "^5"
    },
    "oclif": {

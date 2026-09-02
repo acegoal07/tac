@@ -1,7 +1,5 @@
-import { Args, Command } from '@oclif/core';
-import chalk from 'chalk';
+import { Args, Command, ux } from '@oclif/core';
 import { stop } from 'docker-compose';
-import ora from 'ora';
 
 import Cluster from '../../assets/lib/cluster';
 import { dockerUp } from '../../assets/lib/util';
@@ -17,7 +15,7 @@ export default class ClusterStop extends Command {
 
       // Check whether docker is running
       if (!(await dockerUp())) {
-         return console.log(chalk.red('\nDocker needs to be running\n'));
+         return console.log(ux.colorize('red', '\nDocker needs to be running\n'));
       }
 
       // Get the cluster
@@ -25,28 +23,29 @@ export default class ClusterStop extends Command {
 
       // Check that a cluster exists
       if (!cluster.exists()) {
-         return console.log(chalk.yellow('\nNo cluster exists with that name\n'));
+         return console.log(ux.colorize('yellow', '\nNo cluster exists with that name\n'));
       }
 
       // Check if anything within the cluster is running
       if (!(await cluster.isUp())) {
-         return console.log(chalk.red(`\nThe cluster isn't running\n`));
+         return console.log(ux.colorize('red', "\nThe cluster isn't running\n"));
       }
 
       // Stop the cluster
       console.log();
-      const spinner = ora('Stopping the cluster').start();
+      ux.action.start('Stopping the cluster');
 
       await stop({ cwd: cluster.path })
          .catch((error) => {
-            spinner.fail('Failed to stop cluster');
-            return console.error(
-               `\nAn error occurred while initialising the cluster, ERROR:\n ${error}\n`
+            ux.action.stop('Failed');
+            console.error(
+               ux.colorize('red', '\nAn error occurred while initialising the cluster, ERROR:\n')
             );
+            return console.log(error);
          })
          .then(() => {
-            spinner.succeed('Cluster has been stopped');
-            console.log(chalk.green(`\n${args.name} has been stopped\n`));
+            ux.action.stop('Successful');
+            console.log(ux.colorize('green', `\n${args.name} has been stopped\n`));
          });
    }
 }

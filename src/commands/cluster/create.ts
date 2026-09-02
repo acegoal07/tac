@@ -1,6 +1,4 @@
-import { Command, Flags } from '@oclif/core';
-import chalk from 'chalk';
-import ora from 'ora';
+import { Command, Flags, ux } from '@oclif/core';
 
 import Cluster from '../../assets/lib/cluster';
 
@@ -62,7 +60,7 @@ export default class ClusterCreate extends Command {
 
       // Create spinner
       console.log();
-      const spinner = ora('Creating cluster').start();
+      ux.action.start('Creating cluster');
 
       // Create cluster
       if (
@@ -77,21 +75,26 @@ export default class ClusterCreate extends Command {
          })
       ) {
          // Success spinner
-         spinner.succeed('Successfully created the cluster');
+         ux.action.stop('successful');
 
          // File location
          console.log(
-            chalk.green(`\nThe ${cluster.name} cluster has been saved to:\n${cluster.path}`)
+            ux.colorize(
+               'green',
+               `\nThe ${cluster.name} cluster has been saved to:\n${cluster.path}`
+            )
          );
 
          // Show how to start it up
          console.log(
-            chalk.green(
+            ux.colorize(
+               'green',
                `\nYou can now start up the cluster using:\ntac cluster:start ${flags.name}\n`
             )
          );
       } else {
-         console.log(chalk.red('\nFailed to create a cluster\n'));
+         ux.action.stop('Failed');
+         console.log(ux.colorize('red', '\nFailed to create a cluster\n'));
       }
    }
 }

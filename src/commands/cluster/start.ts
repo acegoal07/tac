@@ -1,7 +1,5 @@
-import { Args, Command } from '@oclif/core';
-import chalk from 'chalk';
+import { Args, Command, ux } from '@oclif/core';
 import { upAll } from 'docker-compose';
-import ora from 'ora';
 
 import Cluster from '../../assets/lib/cluster';
 import { dockerUp, sshdRunning } from '../../assets/lib/util';
@@ -20,7 +18,7 @@ export default class ClusterStart extends Command {
 
       // Check whether docker is running
       if (!(await dockerUp())) {
-         return console.log(chalk.red('\nDocker needs to be running\n'));
+         return console.log(ux.colorize('red', '\nDocker needs to be running\n'));
       }
 
       // Get the cluster
@@ -28,52 +26,58 @@ export default class ClusterStart extends Command {
 
       // Check that a cluster exists
       if (!cluster.exists()) {
-         return console.log(chalk.yellow('\nNo cluster exists with that name\n'));
+         return console.log(ux.colorize('yellow', '\nNo cluster exists with that name\n'));
       }
 
       // Check if anything within the cluster is running
       if (await cluster.isUp()) {
-         return console.log(chalk.red(`\nThe cluster is already running\n`));
+         return console.log(ux.colorize('red', '\nThe cluster is already running\n`'));
       }
 
       // Start up container
       console.log(
-         chalk.yellow(
+         ux.colorize(
+            'yellow',
             '\nIf this is your first time booting a cluster\nit can take a while to create the image so be patient\n'
          )
       );
 
-      let spinner = ora('Booting cluster').start();
+      ux.action.start('Booting cluster');
 
       await upAll({ cwd: cluster.path })
          .then(async () => {
-            spinner.succeed('Successfully booted cluster');
-            spinner = ora('Running initialiser scripts').start();
+            ux.action.stop('Successful');
+            ux.action.start('Running initialiser scripts');
             const running = await sshdRunning(args.name);
             if (running) {
-               spinner.succeed('SSH connection established');
+               ux.action.stop('successful');
                console.log(
-                  chalk.green(
+                  ux.colorize(
+                     'green',
                      `\n${args.name} has been started and can now be connect to using:\ntac connect ${args.name}\n`
                   )
                );
                console.log(
-                  chalk.yellow(
-                     `Some nodes might still be booting still so might not be accessible straight away\n`
+                  ux.colorize(
+                     'yellow',
+                     'Some nodes might still be booting still so might not be accessible straight away\n'
                   )
                );
             } else {
-               spinner.fail('SSH connection timed out');
+               ux.action.stop('Timed out');
                console.log(
-                  chalk.yellow(
+                  ux.colorize(
+                     'yellow',
                      `\n${args.name} is taking a while to start the SSH daemon\nWait a few minutes and then try connecting using: \ntac connect ${args.name}\n`
                   )
                );
             }
          })
          .catch((error) => {
-            spinner.fail('Failed to boot cluster');
-            console.error('\nAn error occurred while booting the cluster, ERROR:\n');
+            ux.action.stop('Failed');
+            console.error(
+               ux.colorize('red', '\nAn error occurred while booting the cluster, ERROR:\n')
+            );
             return console.log(error);
          });
    }
