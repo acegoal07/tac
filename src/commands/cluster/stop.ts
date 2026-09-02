@@ -34,7 +34,8 @@ export default class ClusterStop extends Command {
       console.log();
       ux.action.start('Stopping the cluster');
 
-      await cluster.stop()
+      await cluster
+         .stop()
          .catch((error) => {
             ux.action.stop('Failed');
             console.error(

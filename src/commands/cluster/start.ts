@@ -43,7 +43,8 @@ export default class ClusterStart extends Command {
 
       ux.action.start('Booting cluster');
 
-      await cluster.start()
+      await cluster
+         .start()
          .then(async () => {
             ux.action.stop('Successful');
             ux.action.start('Running initialiser scripts');
