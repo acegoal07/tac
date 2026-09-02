@@ -16,6 +16,6 @@ export function pathToCLIAssets(dir: string, ...destination: string[]): string {
  * @param {string} name The name of the cluster
  * @returns {string} The completed path
  */
-export function pathToCluster(name: string): string {
-   return join(envPaths('tac').data, name);
+export function pathToCluster(name?: string): string {
+   return join(envPaths('tac').data, name ?? '');
 }

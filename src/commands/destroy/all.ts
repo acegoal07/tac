@@ -17,7 +17,7 @@ export default class DestroyAll extends Command {
       }
 
       // Get the path to the cluster folder
-      const clustersDir = pathToCluster('');
+      const clustersDir = pathToCluster();
 
       // Check to see if the cluster dir exists
       if (!existsSync(clustersDir)) {

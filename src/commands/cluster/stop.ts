@@ -1,5 +1,4 @@
 import { Args, Command, ux } from '@oclif/core';
-import { stop } from 'docker-compose';
 
 import Cluster from '../../assets/lib/cluster';
 import { dockerUp } from '../../assets/lib/util';
@@ -35,7 +34,8 @@ export default class ClusterStop extends Command {
       console.log();
       ux.action.start('Stopping the cluster');
 
-      await stop({ cwd: cluster.path })
+      await cluster
+         .stop()
          .catch((error) => {
             ux.action.stop('Failed');
             console.error(

@@ -1,5 +1,4 @@
 import { Args, Command, ux } from '@oclif/core';
-import { upAll } from 'docker-compose';
 
 import Cluster from '../../assets/lib/cluster';
 import { dockerUp, sshdRunning } from '../../assets/lib/util';
@@ -44,7 +43,8 @@ export default class ClusterStart extends Command {
 
       ux.action.start('Booting cluster');
 
-      await upAll({ cwd: cluster.path })
+      await cluster
+         .start()
          .then(async () => {
             ux.action.stop('Successful');
             ux.action.start('Running initialiser scripts');
