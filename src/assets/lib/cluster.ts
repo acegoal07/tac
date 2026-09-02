@@ -7,9 +7,12 @@ import { join } from 'node:path';
 import { pathToCLIAssets, pathToCluster } from './paths';
 import { createKeyPair, createNodeName } from './util';
 
+/**
+ * The options that are available within a cluster
+ */
 export type ClusterOptions = {
    cpus: number;
-   database: boolean | null;
+   database: boolean;
    memory: number;
    module: string;
    name: string;
@@ -17,6 +20,9 @@ export type ClusterOptions = {
    port: number;
 };
 
+/**
+ * An instance of a cluster used for management and control
+ */
 export default class Cluster {
    public readonly name: string;
    public readonly path: string;
