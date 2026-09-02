@@ -1,0 +1,37 @@
+name: Format PR
+
+on:
+   pull_request:
+      types: [opened, synchronize, reopened]
+
+permissions:
+   contents: write
+
+jobs:
+   format:
+      name: format
+      runs-on: ubuntu-latest
+
+      steps:
+         - name: Checkout PR branch
+           uses: actions/checkout@v7
+           with:
+              ref: ${{ github.head_ref }}
+
+         - name: Setup Node
+           uses: actions/setup-node@v7
+           with:
+              node-version: 24
+
+         - name: Format code
+           run: |
+              npx prettier --write .
+
+         - name: Commit formatting changes
+           run: |
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+              git add .
+              git commit -m "chore: apply formatting" || exit 0
+              git push
