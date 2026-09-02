@@ -13,7 +13,8 @@ export default class ClusterCreate extends Command {
       }),
       database: Flags.boolean({
          char: 'd',
-         default: false,description: 'Whether or not a database should be setup for the cluster'
+         default: false,
+         description: 'Whether or not a database should be setup for the cluster'
       }),
       memory: Flags.integer({
          char: 'm',
