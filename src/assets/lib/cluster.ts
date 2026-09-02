@@ -7,9 +7,12 @@ import { join } from 'node:path';
 import { pathToCLIAssets, pathToCluster } from './paths';
 import { createKeyPair, createNodeName } from './util';
 
+/**
+ * The options that are available within a cluster
+ */
 export type ClusterOptions = {
    cpus: number;
-   database: boolean | null;
+   database: boolean;
    memory: number;
    module: string;
    name: string;
@@ -17,6 +20,9 @@ export type ClusterOptions = {
    port: number;
 };
 
+/**
+ * An instance of a cluster used for management and control
+ */
 export default class Cluster {
    public readonly name: string;
    public readonly path: string;
@@ -95,10 +101,7 @@ export default class Cluster {
                join(this.path, 'hostkeys', `${nodeName}_ssh_host_ed25519_key`)
             );
 
-            appendFileSync(
-               join(this.path, 'known_hosts'),
-               `${createNodeName(i)} ${keyPair.public}\n`
-            );
+            appendFileSync(join(this.path, 'known_hosts'), `${nodeName} ${keyPair.public}\n`);
          }
 
          // Generate key for moving between clusters
@@ -141,6 +144,11 @@ export default class Cluster {
 
          return true;
       } catch {
+         rmSync(this.path, {
+            force: true,
+            recursive: true
+         });
+
          return false;
       }
    }
@@ -160,6 +168,8 @@ export default class Cluster {
             force: true,
             recursive: true
          });
+
+         this.options = null;
 
          return true;
       } catch {

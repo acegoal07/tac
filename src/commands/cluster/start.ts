@@ -37,7 +37,7 @@ export default class ClusterStart extends Command {
       console.log(
          ux.colorize(
             'yellow',
-            '\nIf this is your first time booting a cluster\nit can take a while to create the image so be patient\n'
+            '\nIf this is your first time booting the cluster\nit can take a while to create the image so be patient\n'
          )
       );
 
