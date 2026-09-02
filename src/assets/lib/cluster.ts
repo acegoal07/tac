@@ -101,10 +101,7 @@ export default class Cluster {
                join(this.path, 'hostkeys', `${nodeName}_ssh_host_ed25519_key`)
             );
 
-            appendFileSync(
-               join(this.path, 'known_hosts'),
-               `${createNodeName(i)} ${keyPair.public}\n`
-            );
+            appendFileSync(join(this.path, 'known_hosts'), `${nodeName} ${keyPair.public}\n`);
          }
 
          // Generate key for moving between clusters
