@@ -78,7 +78,7 @@ export default class ClusterEdit extends Command {
 
       // Make sure there is ta least one change
       if (!changed) {
-         return console.log(ux.colorize('yellow', '\nNo changes were made so canceling update.\n'));
+         return console.log(ux.colorize('yellow', '\nNo changes were made so cancelling update.\n'));
       }
 
       // Create spinner

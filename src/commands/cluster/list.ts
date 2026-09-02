@@ -10,7 +10,7 @@ export default class ClusterList extends Command {
 
    public async run(): Promise<void> {
       // Cluster dir path
-      const clustersDir = pathToCluster('');
+      const clustersDir = pathToCluster();
 
       // Check that the dir exists
       if (!existsSync(clustersDir)) {

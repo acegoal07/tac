@@ -1,4 +1,4 @@
-import { down, ps } from 'docker-compose';
+import { down, IDockerComposeResult, ps, stop, upAll } from 'docker-compose';
 import { Eta } from 'eta';
 import { randomBytes } from 'node:crypto';
 import { appendFileSync, cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -74,11 +74,11 @@ export default class Cluster {
          createKeyPair(authorizedKeys, join(this.path, 'cluster_key'));
 
          // Generate login node keys
-         const loginKeyPub = createKeyPair(
+         const loginKeyPair = createKeyPair(
             authorizedKeys,
             join(this.path, 'hostkeys', 'login_ssh_host_ed25519_key')
          );
-         appendFileSync(join(this.path, 'known_hosts'), `login ${loginKeyPub}\n`);
+         appendFileSync(join(this.path, 'known_hosts'), `login ${loginKeyPair.public}\n`);
 
          // Generate database keys
          createKeyPair(
@@ -90,12 +90,15 @@ export default class Cluster {
          for (let i = 1; i <= options.nodes!; i++) {
             const nodeName = createNodeName(i);
 
-            const publicKey = createKeyPair(
+            const keyPair = createKeyPair(
                authorizedKeys,
                join(this.path, 'hostkeys', `${nodeName}_ssh_host_ed25519_key`)
             );
 
-            appendFileSync(join(this.path, 'known_hosts'), `${createNodeName(i)} ${publicKey}\n`);
+            appendFileSync(
+               join(this.path, 'known_hosts'),
+               `${createNodeName(i)} ${keyPair.public}\n`
+            );
          }
 
          // Generate key for moving between clusters
@@ -144,7 +147,7 @@ export default class Cluster {
 
    /**
     * Destroys the cluster, removes it's files and deletes it's images
-    * @returns {boolean} Whether the destroying of the cluster was successful
+    * @returns {Promise<boolean>} Whether the destroying of the cluster was successful
     */
    async destroy(): Promise<boolean> {
       try {
@@ -182,7 +185,7 @@ export default class Cluster {
 
    /**
     * Checks whether or not all the containers in a cluster is running
-    * @returns {boolean} Whether or not the cluster is running
+    * @returns {Promise<boolean>} Whether or not the cluster is running
     */
    async isUp(): Promise<boolean> {
       const clusterInformation = await ps({ cwd: this.path });
@@ -205,5 +208,21 @@ export default class Cluster {
       } catch {
          return null;
       }
+   }
+
+   /**
+    * Starts up the cluster
+    * @returns {Promise<IDockerComposeResult>} The async start
+    */
+   async start(): Promise<IDockerComposeResult> {
+      return upAll({ cwd: this.path });
+   }
+
+   /**
+    * Stop the cluster
+    * @returns {Promise<IDockerComposeResult>} The async stop
+    */
+   async stop(): Promise<IDockerComposeResult> {
+      return stop({ cwd: this.path });
    }
 }

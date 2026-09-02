@@ -17,8 +17,15 @@ export function createNodeName(index: number): string {
  * Handles creating a cluster key pair
  * @param {string} authorizedKeysPath The path to authorised keys
  * @param {string} destination the destination of the keys (Shouldn't include file extensions as it'll be used for both public and private key)
+ * @returns {{
+ *    private: string;
+ *    public: string;
+ * }} The generated keyPair
  */
-export function createKeyPair(authorizedKeysPath: string, destination: string) {
+export function createKeyPair(
+   authorizedKeysPath: string,
+   destination: string
+): { private: string; public: string } {
    const keyPair = utils.generateKeyPairSync('ed25519');
 
    writeFileSync(`${destination}.pub`, keyPair.public);
@@ -29,7 +36,7 @@ export function createKeyPair(authorizedKeysPath: string, destination: string) {
 
    appendFileSync(authorizedKeysPath, `${keyPair.public} \n`);
 
-   return keyPair.public;
+   return keyPair;
 }
 
 /**
