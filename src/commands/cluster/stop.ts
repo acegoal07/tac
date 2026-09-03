@@ -32,7 +32,7 @@ export default class ClusterStop extends Command {
 
       // Stop the cluster
       console.log();
-      ux.action.start('Stopping the cluster');
+      ux.action.start(`Stopping ${cluster.name}`);
 
       await cluster
          .stop()
