@@ -1,7 +1,7 @@
 import { Args, Command, ux } from '@oclif/core';
 
 import Cluster from '../../assets/lib/cluster';
-import { dockerUp, sshdRunning } from '../../assets/lib/util';
+import { dockerUp } from '../../assets/lib/util';
 
 export default class ClusterStart extends Command {
    static override readonly args = {
@@ -47,31 +47,18 @@ export default class ClusterStart extends Command {
          .start()
          .then(async () => {
             ux.action.stop(ux.colorize('green', 'Successful'));
-            ux.action.start('Running initialiser scripts');
-            const running = await sshdRunning(args.name);
-            if (running) {
-               ux.action.stop(ux.colorize('green', 'Successful'));
-               console.log(
-                  ux.colorize(
-                     'green',
-                     `\n${args.name} has been started and can now be connect to using:\ntac connect ${args.name}\n`
-                  )
-               );
-               console.log(
-                  ux.colorize(
-                     'yellow',
-                     'Some nodes might still be booting still so might not be accessible straight away\n'
-                  )
-               );
-            } else {
-               ux.action.stop(ux.colorize('red', 'Timed out'));
-               console.log(
-                  ux.colorize(
-                     'yellow',
-                     `\n${args.name} is taking a while to start the SSH daemon\nWait a few minutes and then try connecting using: \ntac connect ${args.name}\n`
-                  )
-               );
-            }
+            console.log(
+               ux.colorize(
+                  'green',
+                  `\n${args.name} has been started and can now be connect to using:\ntac connect ${args.name}\n`
+               )
+            );
+            console.log(
+               ux.colorize(
+                  'yellow',
+                  'Some nodes might still be booting so might not be accessible straight away\n'
+               )
+            );
          })
          .catch((error) => {
             ux.action.stop(ux.colorize('red', 'Failed'));

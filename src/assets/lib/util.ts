@@ -1,8 +1,6 @@
 import Dockerode from 'dockerode';
 import { appendFileSync, chmodSync, writeFileSync } from 'node:fs';
-import { Client, utils } from 'ssh2';
-
-import Cluster from './cluster';
+import { utils } from 'ssh2';
 
 /**
  * Creates the name of a node using it's index and has option for more padding before the number
@@ -37,63 +35,6 @@ export function createKeyPair(
    appendFileSync(authorizedKeysPath, `${keyPair.public} \n`);
 
    return keyPair;
-}
-
-/**
- * Whether or not the ssh demon is running in the cluster
- * @param {string} name The name of the cluster
- * @param {number} timeout How long before the check should timeout
- * @returns {Promise<boolean>} Whether or not the demon is running
- */
-export function sshdRunning(name: string, timeout = 20_000): Promise<boolean> {
-   return new Promise((resolve) => {
-      const deadline = Date.now() + timeout;
-      const cluster = new Cluster(name);
-      let resolved = false;
-
-      const finish = (result: boolean) => {
-         if (resolved) {
-            return;
-         }
-
-         resolved = true;
-         resolve(result);
-      };
-
-      const check = () => {
-         if (resolved) {
-            return;
-         }
-
-         const remaining = deadline - Date.now();
-
-         if (remaining <= 0) {
-            finish(false);
-            return;
-         }
-
-         const conn = new Client();
-
-         conn.on('ready', () => {
-            conn.end();
-            finish(true);
-         });
-
-         conn.on('error', () => {
-            conn.destroy();
-
-            if (Date.now() < deadline) {
-               setTimeout(check, 500);
-            } else {
-               finish(false);
-            }
-         });
-
-         conn.connect(cluster.connectionInfo());
-      };
-
-      check();
-   });
 }
 
 /**

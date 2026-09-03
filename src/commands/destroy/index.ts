@@ -29,7 +29,7 @@ export default class DestroyIndex extends Command {
 
       // Create spinner
       console.log();
-      ux.action.start("Destroying cluster and it's files");
+      ux.action.start(`Destroying ${cluster.name} and it's files`);
 
       // Destroy and delete cluster
       const outcome = await cluster.destroy();
