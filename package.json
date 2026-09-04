@@ -1,6 +1,6 @@
 {
    "name": "@acegoal07/tac",
-   "version": "0.0.19",
+   "version": "0.0.20",
    "description": "A CLI tool for creating, accessing and managing docker based clusters",
    "author": "acegoal07",
    "license": "MIT",
@@ -70,7 +70,8 @@
    },
    "scripts": {
       "build": "shx rm -rf dist && tsc -b && shx mkdir -p dist/assets && shx cp -r src/assets/setup_scripts dist/assets/ && shx cp -r src/assets/templates dist/assets/ && shx cp -r src/assets/docker dist/assets/",
-      "lint": "eslint",
+      "lint": "eslint src/",
+      "lint:fix": "eslint src/ --fix",
       "format": "prettier . --write",
       "prepack": "oclif manifest && oclif readme",
       "postpack": "shx rm -f oclif.manifest.json"

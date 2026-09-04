@@ -42,7 +42,7 @@ export default class ClusterStart extends Command {
       );
 
       // Start cluster
-      ux.action.start('Booting cluster');
+      ux.action.start(`Booting ${cluster.name}`);
       await cluster
          .start()
          .then(async () => {

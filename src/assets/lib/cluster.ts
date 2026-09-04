@@ -159,16 +159,19 @@ export default class Cluster {
     */
    async destroy(): Promise<boolean> {
       try {
+         // Take down the cluster container and delete it
          await down({
             commandOptions: ['-v', ['--rmi', 'all']],
             cwd: this.path
          });
 
+         // Delete it's folder
          rmSync(this.path, {
             force: true,
             recursive: true
          });
 
+         // Set it's options to null
          this.options = null;
 
          return true;
