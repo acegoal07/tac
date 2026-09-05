@@ -3,17 +3,17 @@ import { Args, Command, ux } from '@oclif/core';
 import Cluster from '../../assets/lib/cluster';
 import { dockerUp } from '../../assets/lib/util';
 
-export default class ClusterStart extends Command {
+export default class ClusterRestart extends Command {
    static override readonly args = {
       name: Args.string({
          description: 'The name of the cluster',
          required: true
       })
    };
-   static override readonly description = 'Starts up the cluster';
+   static override readonly description = 'Restarts the cluster';
 
    public async run(): Promise<void> {
-      const { args } = await this.parse(ClusterStart);
+      const { args } = await this.parse(ClusterRestart);
 
       // Check whether docker is running
       if (!(await dockerUp())) {
@@ -29,19 +29,29 @@ export default class ClusterStart extends Command {
       }
 
       // Check if anything within the cluster is running
-      if (await cluster.isUp()) {
-         return console.log(ux.colorize('red', '\nThe cluster is already running\n'));
+      if (!(await cluster.isUp())) {
+         return console.log(ux.colorize('red', "\nThe cluster isn't running\n"));
       }
 
-      // Start up container
-      console.log(
-         ux.colorize(
-            'yellow',
-            '\nIf this is your first time starting the cluster\nit can take a while to create the image so be patient\n'
-         )
-      );
+      // Stopping the cluster
+      console.log();
+      ux.action.start(`Stopping ${cluster.name}`);
 
-      // Start cluster
+      await cluster
+         .stop()
+         .then(() => {
+            ux.action.stop(ux.colorize('green', 'Successful'));
+         })
+         .catch((error) => {
+            ux.action.stop(ux.colorize('red', 'Failed'));
+            console.error(
+               ux.colorize('red', '\nAn error occurred while initialising the cluster, ERROR:\n')
+            );
+
+            throw error;
+         });
+
+      // Start the cluster
       ux.action.start(`Starting ${cluster.name}`);
       await cluster
          .start()
@@ -65,7 +75,7 @@ export default class ClusterStart extends Command {
             console.error(
                ux.colorize('red', '\nAn error occurred while starting the cluster, ERROR:\n')
             );
-            
+
             throw error;
          });
    }

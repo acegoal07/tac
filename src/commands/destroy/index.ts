@@ -5,7 +5,7 @@ import { dockerUp } from '../../assets/lib/util';
 
 export default class DestroyIndex extends Command {
    static override readonly args = {
-      name: Args.string({ description: 'The docker cluster to destroy', required: true })
+      name: Args.string({ description: 'The name of the cluster', required: true })
    };
    static override readonly description = 'Destroys a specific docker cluster';
 
@@ -32,10 +32,7 @@ export default class DestroyIndex extends Command {
       ux.action.start(`Destroying ${cluster.name} and it's files`);
 
       // Destroy and delete cluster
-      const outcome = await cluster.destroy();
-
-      // Update spinner with the outcome
-      if (outcome) {
+      if (await cluster.destroy()) {
          ux.action.stop(ux.colorize('green', 'Successful'));
       } else {
          ux.action.stop(ux.colorize('red', 'Failed'));

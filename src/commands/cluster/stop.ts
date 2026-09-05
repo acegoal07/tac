@@ -5,7 +5,7 @@ import { dockerUp } from '../../assets/lib/util';
 
 export default class ClusterStop extends Command {
    static override readonly args = {
-      name: Args.string({ description: 'The name of the cluster you want to stop', required: true })
+      name: Args.string({ description: 'The name of the cluster', required: true })
    };
    static override readonly description = 'Stops a cluster you have running';
 
@@ -36,16 +36,17 @@ export default class ClusterStop extends Command {
 
       await cluster
          .stop()
+         .then(() => {
+            ux.action.stop(ux.colorize('green', 'Successful'));
+            console.log(ux.colorize('green', `\n${args.name} has been stopped\n`));
+         })
          .catch((error) => {
             ux.action.stop(ux.colorize('red', 'Failed'));
             console.error(
                ux.colorize('red', '\nAn error occurred while initialising the cluster, ERROR:\n')
             );
-            return console.log(error);
-         })
-         .then(() => {
-            ux.action.stop(ux.colorize('green', 'Successful'));
-            console.log(ux.colorize('green', `\n${args.name} has been stopped\n`));
+
+            throw error;
          });
    }
 }
