@@ -1,18 +1,23 @@
-import { includeIgnoreFile } from '@eslint/config-helpers';
 import oclif from 'eslint-config-oclif';
 import prettier from 'eslint-config-prettier';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import unusedImports from 'eslint-plugin-unused-imports';
+import { defineConfig } from 'eslint/config';
 
-const gitignorePath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '.gitignore');
-
-export default [
-   includeIgnoreFile(gitignorePath),
+export default defineConfig(
+   {
+      ignores: ['bin/**', 'dist/**', 'node_modules/**']
+   },
    ...oclif,
    prettier,
    {
+      plugins: {
+         'unused-imports': unusedImports
+      },
       rules: {
-         'unicorn/prefer-module': 'off'
+         'unicorn/prefer-module': 'off',
+         '@typescript-eslint/no-unused-vars': 'off',
+         'unicorn/consistent-class-member-order': 'off',
+         'unused-imports/no-unused-imports': 'error'
       }
    }
-];
+);

@@ -1,6 +1,6 @@
 import { Command, Flags, ux } from '@oclif/core';
 
-import Cluster from '../../assets/lib/cluster';
+import Cluster from '../../assets/lib/cluster.js';
 
 export default class ClusterCreate extends Command {
    static override readonly description = 'Creates a clusters files using the options provided';
@@ -55,7 +55,8 @@ export default class ClusterCreate extends Command {
 
       // Check if the cluster already exists
       if (cluster.exists()) {
-         return console.log(`\nA cluster with that name already exists try again.\n`);
+         console.log('\nA cluster with that name already exists try again.\n');
+         return;
       }
 
       // Create spinner

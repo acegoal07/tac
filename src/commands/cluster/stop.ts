@@ -1,12 +1,13 @@
 import { Args, Command, ux } from '@oclif/core';
 
-import Cluster from '../../assets/lib/cluster';
-import { dockerUp } from '../../assets/lib/util';
+import Cluster from '../../assets/lib/cluster.js';
+import { dockerUp } from '../../assets/lib/util.js';
 
 export default class ClusterStop extends Command {
    static override readonly args = {
       name: Args.string({ description: 'The name of the cluster', required: true })
    };
+
    static override readonly description = 'Stops a cluster you have running';
 
    public async run(): Promise<void> {
@@ -14,7 +15,8 @@ export default class ClusterStop extends Command {
 
       // Check whether docker is running
       if (!(await dockerUp())) {
-         return console.log(ux.colorize('red', '\nDocker needs to be running\n'));
+         console.log(ux.colorize('red', '\nDocker needs to be running\n'));
+         return;
       }
 
       // Get the cluster
@@ -22,12 +24,14 @@ export default class ClusterStop extends Command {
 
       // Check that a cluster exists
       if (!cluster.exists()) {
-         return console.log(ux.colorize('yellow', '\nNo cluster exists with that name\n'));
+         console.log(ux.colorize('yellow', '\nNo cluster exists with that name\n'));
+         return;
       }
 
       // Check if anything within the cluster is running
       if (!(await cluster.isUp())) {
-         return console.log(ux.colorize('red', "\nThe cluster isn't running\n"));
+         console.log(ux.colorize('red', "\nThe cluster isn't running\n"));
+         return;
       }
 
       // Stop the cluster
@@ -40,10 +44,10 @@ export default class ClusterStop extends Command {
             ux.action.stop(ux.colorize('green', 'Successful'));
             console.log(ux.colorize('green', `\n${args.name} has been stopped\n`));
          })
-         .catch((error) => {
+         .catch((error: unknown) => {
             ux.action.stop(ux.colorize('red', 'Failed'));
             console.error(
-               ux.colorize('red', '\nAn error occurred while initialising the cluster, ERROR:\n')
+               ux.colorize('red', '\nAn error occurred while initialising the cluster\n')
             );
 
             throw error;

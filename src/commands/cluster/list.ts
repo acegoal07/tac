@@ -2,8 +2,8 @@ import { Command, ux } from '@oclif/core';
 import Table from 'cli-table3';
 import { existsSync, readdirSync } from 'node:fs';
 
-import Cluster from '../../assets/lib/cluster';
-import { pathToCluster } from '../../assets/lib/paths';
+import Cluster from '../../assets/lib/cluster.js';
+import { pathToCluster } from '../../assets/lib/paths.js';
 
 export default class ClusterList extends Command {
    static override readonly description = 'Lists all the clusters';
@@ -14,7 +14,8 @@ export default class ClusterList extends Command {
 
       // Check that the dir exists
       if (!existsSync(clustersDir)) {
-         return console.log(`\nNo cluster exist\n`);
+         console.log('\nNo cluster exist\n');
+         return;
       }
 
       // Read the clusters dir and filter out non folders
@@ -24,7 +25,8 @@ export default class ClusterList extends Command {
 
       // Makes sure there is at least one cluster
       if (clusterNames.length === 0) {
-         return console.log(ux.colorize('green', '\nNo available clusters\n'));
+         console.log(ux.colorize('green', '\nNo available clusters\n'));
+         return;
       }
 
       // Create table layout

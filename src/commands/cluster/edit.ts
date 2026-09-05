@@ -1,11 +1,12 @@
 import { Args, Command, Flags, ux } from '@oclif/core';
 
-import Cluster, { ClusterOptions } from '../../assets/lib/cluster';
+import Cluster, { type ClusterOptions } from '../../assets/lib/cluster.js';
 
 export default class ClusterEdit extends Command {
    static override readonly args = {
       name: Args.string({ description: 'The name of the cluster to edit', required: true })
    };
+
    static override readonly description = 'Edits the info for a cluster';
    static override readonly flags = {
       cpus: Flags.integer({
@@ -47,17 +48,17 @@ export default class ClusterEdit extends Command {
 
       // Check that cluster exists
       if (!cluster.exists()) {
-         return console.log(
-            ux.colorize('red', "\nThe cluster you're trying to edit doesn't exists.\n")
-         );
+         console.log(ux.colorize('red', "\nThe cluster you're trying to edit doesn't exists.\n"));
+         return;
       }
 
       // Get cluster information
-      const clusterData: ClusterOptions | null = cluster.dumpInfo();
+      const clusterData: ClusterOptions | undefined = cluster.dumpInfo();
 
       // Make sure there is cluster information
       if (!clusterData) {
-         return console.log(ux.colorize('red', '\nFailed to retrieve cluster information.\n'));
+         console.log(ux.colorize('red', '\nFailed to retrieve cluster information.\n'));
+         return;
       }
 
       // merge new data with old
@@ -72,15 +73,14 @@ export default class ClusterEdit extends Command {
       };
 
       // destroy old cluster if data changed
-      const changed = (Object.keys(clusterData) as Array<keyof ClusterOptions>).some(
+      const isChanged = (Object.keys(clusterData) as Array<keyof ClusterOptions>).some(
          (key) => clusterData[key] !== updatedCluster[key]
       );
 
       // Make sure there is ta least one change
-      if (!changed) {
-         return console.log(
-            ux.colorize('yellow', '\nNo changes were made so cancelling update.\n')
-         );
+      if (!isChanged) {
+         console.log(ux.colorize('yellow', '\nNo changes were made so cancelling update.\n'));
+         return;
       }
 
       // Create spinner

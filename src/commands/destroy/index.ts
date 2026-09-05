@@ -1,12 +1,13 @@
 import { Args, Command, ux } from '@oclif/core';
 
-import Cluster from '../../assets/lib/cluster';
-import { dockerUp } from '../../assets/lib/util';
+import Cluster from '../../assets/lib/cluster.js';
+import { dockerUp } from '../../assets/lib/util.js';
 
 export default class DestroyIndex extends Command {
    static override readonly args = {
       name: Args.string({ description: 'The name of the cluster', required: true })
    };
+
    static override readonly description = 'Destroys a specific docker cluster';
 
    public async run(): Promise<void> {
@@ -14,7 +15,8 @@ export default class DestroyIndex extends Command {
 
       // Check whether docker is running
       if (!(await dockerUp())) {
-         return console.log(ux.colorize('red', '\nDocker needs to be running\n'));
+         console.log(ux.colorize('red', '\nDocker needs to be running\n'));
+         return;
       }
 
       // Get cluster
@@ -22,9 +24,8 @@ export default class DestroyIndex extends Command {
 
       // Check that the cluster exits
       if (!cluster.exists()) {
-         return console.log(
-            ux.colorize('yellow', `\n${cluster.name} isn't a cluster that exists.\n`)
-         );
+         console.log(ux.colorize('yellow', `\n${cluster.name} isn't a cluster that exists.\n`));
+         return;
       }
 
       // Create spinner
