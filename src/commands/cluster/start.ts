@@ -17,25 +17,36 @@ export default class ClusterStart extends Command {
       const { args } = await this.parse(ClusterStart);
 
       // Check whether docker is running
+      console.log();
+      ux.action.start('Checking docker');
+
       if (!(await dockerUp())) {
+         ux.action.stop(ux.colorize('red', 'Down'));
          console.log(ux.colorize('red', '\nDocker needs to be running\n'));
          return;
       }
 
+      ux.action.stop(ux.colorize('green', 'Running'));
+
       // Get the cluster
+      ux.action.start('Checking cluster');
       const cluster = new Cluster(args.name);
 
       // Check that a cluster exists
       if (!cluster.exists()) {
+         ux.action.stop(ux.colorize('yellow', 'Not Found'));
          console.log(ux.colorize('yellow', '\nNo cluster exists with that name\n'));
          return;
       }
 
       // Check if anything within the cluster is running
       if (await cluster.isUp()) {
+         ux.action.stop(ux.colorize('red', 'Already Running'));
          console.log(ux.colorize('red', '\nThe cluster is already running\n'));
          return;
       }
+
+      ux.action.stop(ux.colorize('green', 'Complete'));
 
       // Start up container
       console.log(
@@ -47,6 +58,7 @@ export default class ClusterStart extends Command {
 
       // Start cluster
       ux.action.start(`Starting ${cluster.name}`);
+
       await cluster
          .start()
          .then(async () => {
@@ -54,7 +66,7 @@ export default class ClusterStart extends Command {
             console.log(
                ux.colorize(
                   'green',
-                  `\n${args.name} has been started and can now be connect to using:\ntac connect ${args.name}\n`
+                  `\n${args.name} has been started and can now be connect to using:\ntac connect ${cluster.name}\n`
                )
             );
             console.log(

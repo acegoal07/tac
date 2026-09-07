@@ -14,10 +14,16 @@ export default class DestroyIndex extends Command {
       const { args } = await this.parse(DestroyIndex);
 
       // Check whether docker is running
+      console.log();
+      ux.action.start('Checking docker');
+
       if (!(await dockerUp())) {
+         ux.action.stop(ux.colorize('red', 'Down'));
          console.log(ux.colorize('red', '\nDocker needs to be running\n'));
          return;
       }
+
+      ux.action.stop(ux.colorize('green', 'Running'));
 
       // Get cluster
       const cluster = new Cluster(args.name);
@@ -29,7 +35,6 @@ export default class DestroyIndex extends Command {
       }
 
       // Create spinner
-      console.log();
       ux.action.start(`Destroying ${cluster.name} and it's files`);
 
       // Destroy and delete cluster

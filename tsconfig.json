@@ -3,11 +3,12 @@
       "forceConsistentCasingInFileNames": true,
       "declaration": true,
       "module": "NodeNext",
-      "moduleResolution": "NodeNext",
+      "moduleResolution": "nodenext",
       "outDir": "dist",
       "rootDir": "src",
       "strict": true,
-      "target": "es2022",
+
+      "target": "esnext",
       "types": ["node"]
    },
    "include": ["src/**/*"]

@@ -14,9 +14,9 @@ export default defineConfig(
          'unused-imports': unusedImports
       },
       rules: {
-         'unicorn/prefer-module': 'off',
          '@typescript-eslint/no-unused-vars': 'off',
          'unicorn/consistent-class-member-order': 'off',
+         'unicorn/prefer-module': 'off',
          'unused-imports/no-unused-imports': 'error'
       }
    }

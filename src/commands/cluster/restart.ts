@@ -17,28 +17,38 @@ export default class ClusterRestart extends Command {
       const { args } = await this.parse(ClusterRestart);
 
       // Check whether docker is running
+      console.log();
+      ux.action.start('Checking docker');
+
       if (!(await dockerUp())) {
+         ux.action.stop(ux.colorize('red', 'Down'));
          console.log(ux.colorize('red', '\nDocker needs to be running\n'));
          return;
       }
 
+      ux.action.stop(ux.colorize('green', 'Running'));
+
       // Get the cluster
+      ux.action.start('Checking cluster');
       const cluster = new Cluster(args.name);
 
       // Check that a cluster exists
       if (!cluster.exists()) {
+         ux.action.stop(ux.colorize('yellow', 'Not Found'));
          console.log(ux.colorize('yellow', '\nNo cluster exists with that name\n'));
          return;
       }
 
       // Check if anything within the cluster is running
       if (!(await cluster.isUp())) {
+         ux.action.stop(ux.colorize('red', 'Not Running'));
          console.log(ux.colorize('red', "\nThe cluster isn't running\n"));
          return;
       }
 
+      ux.action.stop(ux.colorize('green', 'Complete'));
+
       // Stopping the cluster
-      console.log();
       ux.action.start(`Stopping ${cluster.name}`);
 
       await cluster
@@ -64,7 +74,7 @@ export default class ClusterRestart extends Command {
             console.log(
                ux.colorize(
                   'green',
-                  `\n${args.name} has been started and can now be connect to using:\ntac connect ${args.name}\n`
+                  `\n${args.name} has been restarted and can now be connect to using:\ntac connect ${cluster.name}\n`
                )
             );
             console.log(
@@ -76,9 +86,7 @@ export default class ClusterRestart extends Command {
          })
          .catch((error: unknown) => {
             ux.action.stop(ux.colorize('red', 'Failed'));
-            console.error(
-               ux.colorize('red', '\nAn error occurred while starting the cluster, ERROR:\n')
-            );
+            console.error(ux.colorize('red', '\nAn error occurred while starting the cluster\n'));
 
             throw error;
          });

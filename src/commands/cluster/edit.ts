@@ -1,6 +1,7 @@
 import { Args, Command, Flags, ux } from '@oclif/core';
 
 import Cluster, { type ClusterOptions } from '../../assets/lib/cluster.js';
+import { dockerUp } from '../../assets/lib/util.js';
 
 export default class ClusterEdit extends Command {
    static override readonly args = {
@@ -43,6 +44,18 @@ export default class ClusterEdit extends Command {
    public async run(): Promise<void> {
       const { args, flags } = await this.parse(ClusterEdit);
 
+      // Check whether docker is running
+      console.log();
+      ux.action.start('Checking docker');
+
+      if (!(await dockerUp())) {
+         ux.action.stop(ux.colorize('red', 'Down'));
+         console.log(ux.colorize('red', '\nDocker needs to be running\n'));
+         return;
+      }
+
+      ux.action.stop(ux.colorize('green', 'Running'));
+
       // Get cluster
       const cluster = new Cluster(args.name);
 
@@ -84,7 +97,6 @@ export default class ClusterEdit extends Command {
       }
 
       // Create spinner
-      console.log();
       ux.action.start('Clearing old cluster information');
 
       // Destroys the cluster

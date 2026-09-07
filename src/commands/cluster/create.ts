@@ -90,7 +90,7 @@ export default class ClusterCreate extends Command {
          console.log(
             ux.colorize(
                'green',
-               `\nYou can now start up the cluster using:\ntac cluster:start ${flags.name}\n`
+               `\nYou can now start up the cluster using:\ntac cluster:start ${cluster.name}\n`
             )
          );
       } else {

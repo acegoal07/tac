@@ -12,10 +12,16 @@ export default class DestroyAll extends Command {
 
    public async run(): Promise<void> {
       // Check whether docker is running
+      console.log();
+      ux.action.start('Checking docker');
+
       if (!(await dockerUp())) {
+         ux.action.stop(ux.colorize('red', 'Down'));
          console.log(ux.colorize('red', '\nDocker needs to be running\n'));
          return;
       }
+
+      ux.action.stop(ux.colorize('green', 'Running'));
 
       // Get the path to the cluster folder
       const clustersDir = pathToCluster();
@@ -26,7 +32,6 @@ export default class DestroyAll extends Command {
          return;
       }
 
-      console.log();
       ux.action.start('Removing clusters');
 
       // Read the clusters dir and filter out non folders
