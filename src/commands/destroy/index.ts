@@ -1,4 +1,4 @@
-import { Args, Command, ux } from '@oclif/core';
+import { Args, Command, Flags, ux } from '@oclif/core';
 
 import Cluster from '../../assets/lib/cluster.js';
 import { dockerUp } from '../../assets/lib/util.js';
@@ -10,8 +10,16 @@ export default class DestroyIndex extends Command {
 
    static override readonly description = 'Destroys a specific docker cluster';
 
+   static override readonly flags = {
+      preserve: Flags.boolean({
+         char: 'p',
+         default: false,
+         description: 'Preserve cluster files so it can be booted again'
+      })
+   };
+
    public async run(): Promise<void> {
-      const { args } = await this.parse(DestroyIndex);
+      const { args, flags } = await this.parse(DestroyIndex);
 
       // Check whether docker is running
       console.log();
@@ -33,8 +41,8 @@ export default class DestroyIndex extends Command {
       }
 
       // Destroy and delete cluster
-      ux.action.start(`Destroying ${cluster.name} and it's files`);
-      if (await cluster.destroy()) {
+      ux.action.start(`Destroying ${cluster.name}${flags.preserve ? '' : " and it's files"}`);
+      if (await cluster.destroy(flags.preserve)) {
          ux.action.stop(ux.colorize('green', 'Successful'));
          console.log(`\nSuccessfully destroyed ${cluster.name}\n`);
       } else {

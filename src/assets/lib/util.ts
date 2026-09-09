@@ -4,8 +4,8 @@ import { utils } from 'ssh2';
 
 /**
  * Creates the name of a node using it's index and has option for more padding before the number
- * @param {number} index The position of the node name
- * @returns {string} The created node name
+ * @param index The position of the node name
+ * @returns The created node name
  */
 export function createNodeName(index: number): string {
    return `node${String(index).padStart(2, '0')}`;
@@ -13,12 +13,9 @@ export function createNodeName(index: number): string {
 
 /**
  * Handles creating a cluster key pair
- * @param {string} authorizedKeysPath The path to authorised keys
- * @param {string} destination the destination of the keys (Shouldn't include file extensions as it'll be used for both public and private key)
- * @returns {{
- *    private: string;
- *    public: string;
- * }} The generated keyPair
+ * @param authorizedKeysPath The path to authorised keys
+ * @param destination the destination of the keys (Shouldn't include file extensions as it'll be used for both public and private key)
+ * @returns The generated keyPair
  */
 export function createKeyPair(
    authorizedKeysPath: string,
@@ -39,7 +36,7 @@ export function createKeyPair(
 
 /**
  * Checks whether or not docker is running on the system
- * @returns {boolean} Whether or not docker is running
+ * @returns Whether or not docker is running
  */
 export async function dockerUp(): Promise<boolean> {
    const docker = new Dockerode();
