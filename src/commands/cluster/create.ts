@@ -1,6 +1,6 @@
 import { Command, Flags, ux } from '@oclif/core';
 
-import Cluster from '../../assets/lib/cluster';
+import Cluster from '../../assets/lib/cluster.js';
 
 export default class ClusterCreate extends Command {
    static override readonly description = 'Creates a clusters files using the options provided';
@@ -55,7 +55,7 @@ export default class ClusterCreate extends Command {
 
       // Check if the cluster already exists
       if (cluster.exists()) {
-         return console.log(`\nA cluster with that name already exists try again.\n`);
+         throw new Error(ux.colorize('red', 'A cluster with that name already exists'));
       }
 
       // Create spinner
@@ -77,24 +77,17 @@ export default class ClusterCreate extends Command {
          // Success spinner
          ux.action.stop(ux.colorize('green', 'successful'));
 
-         // File location
+         // Show cluster information
          console.log(
             ux.colorize(
                'green',
-               `\nThe ${cluster.name} cluster has been saved to:\n${cluster.path}`
-            )
-         );
-
-         // Show how to start it up
-         console.log(
-            ux.colorize(
-               'green',
-               `\nYou can now start up the cluster using:\ntac cluster:start ${flags.name}\n`
+               `\nThe ${cluster.name} cluster has been saved to:\n${cluster.path}\n
+               You can now start up the cluster using:\ntac cluster:start ${cluster.name}\n`
             )
          );
       } else {
          ux.action.stop(ux.colorize('red', 'Failed'));
-         console.log(ux.colorize('red', '\nFailed to create a cluster\n'));
+         throw new Error(ux.colorize('red', 'Failed to create a cluster'));
       }
    }
 }

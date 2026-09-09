@@ -3,15 +3,18 @@ import { Args, Command, ux } from '@oclif/core';
 import Cluster from '../../assets/lib/cluster.js';
 import { dockerUp } from '../../assets/lib/util.js';
 
-export default class ClusterStop extends Command {
+export default class ClusterRestart extends Command {
    static override readonly args = {
-      name: Args.string({ description: 'The name of the cluster', required: true })
+      name: Args.string({
+         description: 'The name of the cluster',
+         required: true
+      })
    };
 
-   static override readonly description = 'Stops a cluster you have running';
+   static override readonly description = 'Restarts the cluster';
 
    public async run(): Promise<void> {
-      const { args } = await this.parse(ClusterStop);
+      const { args } = await this.parse(ClusterRestart);
 
       // Check whether docker is running
       console.log();
@@ -42,19 +45,41 @@ export default class ClusterStop extends Command {
 
       ux.action.stop(ux.colorize('green', 'Complete'));
 
-      // Stop the cluster
+      // Stopping the cluster
       ux.action.start(`Stopping ${cluster.name}`);
       await cluster
          .stop()
          .then(() => {
             ux.action.stop(ux.colorize('green', 'Successful'));
-            console.log(ux.colorize('green', `\n${cluster.name} has been stopped\n`));
          })
          .catch((error: unknown) => {
             ux.action.stop(ux.colorize('red', 'Failed'));
             console.error(
                ux.colorize('red', '\nAn error occurred while initialising the cluster\n')
             );
+            throw error;
+         });
+
+      // Start the cluster
+      ux.action.start(`Starting ${cluster.name}`);
+      await cluster
+         .start()
+         .then(async () => {
+            ux.action.stop(ux.colorize('green', 'Successful'));
+            console.log(
+               ux.colorize(
+                  'green',
+                  `\n${args.name} has been restarted and can now be connect to using:\ntac connect ${cluster.name}\n`
+               ) +
+                  ux.colorize(
+                     'yellow',
+                     'Some nodes might still be starting so might not be accessible straight away\n'
+                  )
+            );
+         })
+         .catch((error: unknown) => {
+            ux.action.stop(ux.colorize('red', 'Failed'));
+            console.error(ux.colorize('red', '\nAn error occurred while starting the cluster\n'));
             throw error;
          });
    }

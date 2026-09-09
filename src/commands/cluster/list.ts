@@ -2,8 +2,8 @@ import { Command, ux } from '@oclif/core';
 import Table from 'cli-table3';
 import { existsSync, readdirSync } from 'node:fs';
 
-import Cluster from '../../assets/lib/cluster';
-import { pathToCluster } from '../../assets/lib/paths';
+import Cluster from '../../assets/lib/cluster.js';
+import { pathToCluster } from '../../assets/lib/paths.js';
 
 export default class ClusterList extends Command {
    static override readonly description = 'Lists all the clusters';
@@ -14,8 +14,13 @@ export default class ClusterList extends Command {
 
       // Check that the dir exists
       if (!existsSync(clustersDir)) {
-         return console.log(`\nNo cluster exist\n`);
+         console.log(ux.colorize('green', '\nNo clusters exist\n'));
+         return;
       }
+
+      // Show a spinner while information it's collected
+      console.log();
+      ux.action.start('Collecting cluster information');
 
       // Read the clusters dir and filter out non folders
       const clusterNames = readdirSync(clustersDir, { withFileTypes: true })
@@ -24,7 +29,9 @@ export default class ClusterList extends Command {
 
       // Makes sure there is at least one cluster
       if (clusterNames.length === 0) {
-         return console.log(ux.colorize('green', '\nNo available clusters\n'));
+         ux.action.stop(ux.colorize('green', 'Successful'));
+         console.log(ux.colorize('green', '\nNo clusters exist\n'));
+         return;
       }
 
       // Create table layout
@@ -42,7 +49,7 @@ export default class ClusterList extends Command {
       });
 
       // Add information to table
-      await Promise.all(
+      const rows = await Promise.all(
          clusterNames.map(async (name) => {
             const cluster = new Cluster(name);
 
@@ -60,7 +67,7 @@ export default class ClusterList extends Command {
             }
 
             // Add it to the table
-            table.push([
+            return [
                cluster.name,
                (await cluster.isUp()) ? ux.colorize('green', 'Yes') : ux.colorize('red', 'No'),
                clusterInfo.module,
@@ -69,10 +76,15 @@ export default class ClusterList extends Command {
                clusterInfo.memory,
                clusterInfo.nodes,
                clusterInfo.database ? 'Yes' : 'No'
-            ]);
+            ];
          })
       );
 
+      // Add rows to table
+      table.push(...rows.filter((row): row is Array<number | string> => row !== undefined));
+
+      // Visualise the information
+      ux.action.stop(ux.colorize('green', 'Successful'));
       console.log(`\n${table.toString()}\n`);
    }
 }

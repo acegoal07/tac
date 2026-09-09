@@ -1,13 +1,14 @@
 import { Args, Command, ux } from '@oclif/core';
 import { Client } from 'ssh2';
 
-import Cluster from '../assets/lib/cluster';
-import { dockerUp } from '../assets/lib/util';
+import Cluster from '../assets/lib/cluster.js';
+import { dockerUp } from '../assets/lib/util.js';
 
 export default class Connect extends Command {
    static override readonly args = {
       name: Args.string({ description: 'The name of the cluster to SSH into', required: true })
    };
+
    static override readonly description =
       'Handles connecting to the cluster that the cli has corrected';
 
@@ -16,7 +17,7 @@ export default class Connect extends Command {
 
       // Check whether docker is running
       if (!(await dockerUp())) {
-         return console.log(ux.colorize('red', '\nDocker needs to be running\n'));
+         throw new Error(ux.colorize('red', 'Docker needs to be running'));
       }
 
       // Get cluster
@@ -24,14 +25,12 @@ export default class Connect extends Command {
 
       // Checks whether the cluster exists
       if (!cluster.exists()) {
-         return console.log(ux.colorize('yellow', '\nNo cluster with that name exists\n'));
+         throw new Error(ux.colorize('yellow', 'No cluster with that name exists'));
       }
 
       // Check that the cluster is running
       if (!(await cluster.isUp())) {
-         return console.log(
-            ux.colorize('red', '\nThe cluster needs to running to be able to connect\n')
-         );
+         throw new Error(ux.colorize('red', 'The cluster needs to running to be able to connect'));
       }
 
       // Get SHH client
@@ -42,14 +41,15 @@ export default class Connect extends Command {
          conn.on('ready', () => {
             conn.shell((err, stream) => {
                if (err) {
-                  return reject(err);
+                  reject(err);
+                  return;
                }
 
-               stream.on('data', (data: Buffer) => {
+               stream.on('data', (data: Uint8Array) => {
                   process.stdout.write(data);
                });
 
-               process.stdin.on('data', (data: Buffer) => {
+               process.stdin.on('data', (data: Uint8Array) => {
                   stream.write(data);
                });
 

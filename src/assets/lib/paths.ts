@@ -1,5 +1,5 @@
 import envPaths from 'env-paths';
-import { join } from 'node:path';
+import path from 'node:path';
 
 /**
  * Gets the path to the CLI tools assets
@@ -8,7 +8,7 @@ import { join } from 'node:path';
  * @returns {string} The completed path
  */
 export function pathToCLIAssets(dir: string, ...destination: string[]): string {
-   return join(dir, '..', ...destination);
+   return path.join(dir, '..', ...destination);
 }
 
 /**
@@ -17,5 +17,5 @@ export function pathToCLIAssets(dir: string, ...destination: string[]): string {
  * @returns {string} The completed path
  */
 export function pathToCluster(name?: string): string {
-   return join(envPaths('tac').data, name ?? '');
+   return path.join(envPaths('tac').data, name ?? '');
 }
