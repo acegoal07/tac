@@ -14,7 +14,7 @@ export default class ClusterList extends Command {
 
       // Check that the dir exists
       if (!existsSync(clustersDir)) {
-         console.log('\nNo cluster exist\n');
+         console.log(ux.colorize('green', '\nNo clusters exist\n'));
          return;
       }
 
@@ -30,7 +30,7 @@ export default class ClusterList extends Command {
       // Makes sure there is at least one cluster
       if (clusterNames.length === 0) {
          ux.action.stop(ux.colorize('green', 'Successful'));
-         console.log(ux.colorize('green', '\nNo available clusters\n'));
+         console.log(ux.colorize('green', '\nNo clusters exist\n'));
          return;
       }
 

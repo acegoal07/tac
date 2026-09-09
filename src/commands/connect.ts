@@ -17,7 +17,7 @@ export default class Connect extends Command {
 
       // Check whether docker is running
       if (!(await dockerUp())) {
-         throw new Error(ux.colorize('red', '\nDocker needs to be running\n'));
+         throw new Error(ux.colorize('red', 'Docker needs to be running'));
       }
 
       // Get cluster
@@ -25,14 +25,12 @@ export default class Connect extends Command {
 
       // Checks whether the cluster exists
       if (!cluster.exists()) {
-         throw new Error(ux.colorize('yellow', '\nNo cluster with that name exists\n'));
+         throw new Error(ux.colorize('yellow', 'No cluster with that name exists'));
       }
 
       // Check that the cluster is running
       if (!(await cluster.isUp())) {
-         throw new Error(
-            ux.colorize('red', '\nThe cluster needs to running to be able to connect\n')
-         );
+         throw new Error(ux.colorize('red', 'The cluster needs to running to be able to connect'));
       }
 
       // Get SHH client

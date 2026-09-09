@@ -50,8 +50,7 @@ export default class ClusterEdit extends Command {
 
       if (!(await dockerUp())) {
          ux.action.stop(ux.colorize('red', 'Down'));
-         console.log(ux.colorize('red', '\nDocker needs to be running\n'));
-         return;
+         throw new Error(ux.colorize('red', 'Docker needs to be running'));
       }
 
       ux.action.stop(ux.colorize('green', 'Running'));
@@ -61,8 +60,7 @@ export default class ClusterEdit extends Command {
 
       // Check that cluster exists
       if (!cluster.exists()) {
-         console.log(ux.colorize('red', "\nThe cluster you're trying to edit doesn't exists.\n"));
-         return;
+         throw new Error(ux.colorize('red', "The cluster you're trying to edit doesn't exists"));
       }
 
       // Get cluster information
@@ -70,8 +68,7 @@ export default class ClusterEdit extends Command {
 
       // Make sure there is cluster information
       if (!clusterData) {
-         console.log(ux.colorize('red', '\nFailed to retrieve cluster information.\n'));
-         return;
+         throw new Error(ux.colorize('red', 'Failed to retrieve cluster information'));
       }
 
       // merge new data with old
@@ -92,8 +89,7 @@ export default class ClusterEdit extends Command {
 
       // Make sure there is ta least one change
       if (!isChanged) {
-         console.log(ux.colorize('yellow', '\nNo changes were made so cancelling update.\n'));
-         return;
+         throw new Error(ux.colorize('yellow', 'No changes were made'));
       }
 
       // Destroys the cluster
@@ -102,7 +98,7 @@ export default class ClusterEdit extends Command {
          ux.action.stop(ux.colorize('green', 'Successful'));
       } else {
          ux.action.stop(ux.colorize('red', 'Failed'));
-         return;
+         throw new Error(ux.colorize('red', 'Failed to clear old cluster information'));
       }
 
       // Create updated cluster
@@ -111,6 +107,7 @@ export default class ClusterEdit extends Command {
          ux.action.stop(ux.colorize('green', 'Successful'));
       } else {
          ux.action.stop(ux.colorize('red', 'Failed'));
+         throw new Error(ux.colorize('red', 'Failed to update cluster with new options'));
       }
    }
 }

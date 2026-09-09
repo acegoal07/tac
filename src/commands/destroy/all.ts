@@ -17,7 +17,7 @@ export default class DestroyAll extends Command {
 
       if (!(await dockerUp())) {
          ux.action.stop(ux.colorize('red', 'Down'));
-         throw new Error(ux.colorize('red', '\nDocker needs to be running\n'));
+         throw new Error(ux.colorize('red', 'Docker needs to be running'));
       }
 
       ux.action.stop(ux.colorize('green', 'Running'));
@@ -27,7 +27,7 @@ export default class DestroyAll extends Command {
 
       // Check to see if the cluster dir exists
       if (!existsSync(clustersDir)) {
-         throw new Error(ux.colorize('yellow', '\nNo clusters exists\n'));
+         throw new Error(ux.colorize('yellow', 'No clusters exists'));
       }
 
       // Read the clusters dir and filter out non folders
@@ -47,7 +47,7 @@ export default class DestroyAll extends Command {
          console.log(
             ux.colorize(
                'green',
-               `\nRemoved ${clusters.length} ${clusters.length > 1 ? 'clusters' : 'cluster'}.\n`
+               `\nRemoved ${clusters.length} ${clusters.length > 1 ? 'clusters' : 'cluster'}\n`
             )
          );
       });

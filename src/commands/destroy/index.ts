@@ -19,7 +19,7 @@ export default class DestroyIndex extends Command {
 
       if (!(await dockerUp())) {
          ux.action.stop(ux.colorize('red', 'Down'));
-         throw new Error(ux.colorize('red', '\nDocker needs to be running\n'));
+         throw new Error(ux.colorize('red', 'Docker needs to be running'));
       }
 
       ux.action.stop(ux.colorize('green', 'Running'));
@@ -29,7 +29,7 @@ export default class DestroyIndex extends Command {
 
       // Check that the cluster exits
       if (!cluster.exists()) {
-         throw new Error(ux.colorize('yellow', `\n${cluster.name} isn't a cluster that exists.\n`));
+         throw new Error(ux.colorize('yellow', `${cluster.name} isn't a cluster that exists`));
       }
 
       // Destroy and delete cluster

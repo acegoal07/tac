@@ -22,8 +22,7 @@ export default class ClusterStart extends Command {
 
       if (!(await dockerUp())) {
          ux.action.stop(ux.colorize('red', 'Down'));
-         console.log(ux.colorize('red', '\nDocker needs to be running\n'));
-         return;
+         throw new Error(ux.colorize('red', 'Docker needs to be running'));
       }
 
       ux.action.stop(ux.colorize('green', 'Running'));
@@ -35,15 +34,13 @@ export default class ClusterStart extends Command {
       // Check that a cluster exists
       if (!cluster.exists()) {
          ux.action.stop(ux.colorize('yellow', 'Not Found'));
-         console.log(ux.colorize('yellow', '\nNo cluster exists with that name\n'));
-         return;
+         throw new Error(ux.colorize('yellow', 'No cluster exists with that name'));
       }
 
       // Check if anything within the cluster is running
       if (await cluster.isUp()) {
          ux.action.stop(ux.colorize('red', 'Already Running'));
-         console.log(ux.colorize('red', '\nThe cluster is already running\n'));
-         return;
+         throw new Error(ux.colorize('red', 'The cluster is already running'));
       }
 
       ux.action.stop(ux.colorize('green', 'Complete'));
@@ -66,13 +63,11 @@ export default class ClusterStart extends Command {
                ux.colorize(
                   'green',
                   `\n${args.name} has been started and can now be connect to using:\ntac connect ${cluster.name}\n`
-               )
-            );
-            console.log(
-               ux.colorize(
-                  'yellow',
-                  'Some nodes might still be starting so might not be accessible straight away\n'
-               )
+               ) +
+                  ux.colorize(
+                     'yellow',
+                     'Some nodes might still be starting so might not be accessible straight away\n'
+                  )
             );
          })
          .catch((error: unknown) => {
