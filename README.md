@@ -20,7 +20,9 @@ npm i -g @acegoal07/tac
 - `tac help`: Display help information
 - `tac connect <cluster_name>`: Connect to an existing cluster
 - `tac destroy <cluster_name>`: Destroy a specific cluster
+   - `--preserve`: Preserve the clusters file so it can be used to recreate the clusters later
 - `tac destroy:all`: Destroy all clusters
+   - `--preserve`: Preserve the clusters file so it can be used to recreate the clusters later
 - `tac cluster:create`: Create a new cluster
    - `--name=<cluster_name>`: Specify the name of the cluster
    - `--nodes=<number_of_nodes>`: Specify the number of nodes in the cluster
@@ -32,6 +34,7 @@ npm i -g @acegoal07/tac
 - `tac cluster:list`: List all available clusters
 - `tac cluster:start <cluster_name>`: Start a specific cluster
 - `tac cluster:stop <cluster_name>`: Stop a specific cluster
+- `tac cluster:restart <cluster_name>`: Restart a specific cluster
 - `tac cluster:edit <cluster_name>`: Edit the configuration of a specific cluster
    - `--nodes=<number_of_nodes>`: Specify the number of nodes in the cluster
    - `--cpus=<cpu_limit>`: Specify the CPU limit for each node

@@ -30,7 +30,7 @@ export default class Cluster {
 
    /**
     * Create's the cluster class
-    * @param {string} name The name of the cluster
+    * @param name The name of the cluster
     */
    constructor(name: string) {
       this.name = name;
@@ -40,12 +40,7 @@ export default class Cluster {
 
    /**
     * Creates the SSH connection information for the cluster
-    * @returns {{
-    *    host: string;
-    *    port: number;
-    *    privateKey: string;
-    *    username: string;
-    * }} The SSH connection information
+    * @returns The SSH connection information
     */
    connectionInfo(): {
       host: string;
@@ -63,8 +58,8 @@ export default class Cluster {
 
    /**
     * Create's all the clusters information
-    * @param {ClusterOptions} options The cluster options
-    * @returns {boolean} Whether or not the creation was successful
+    * @param options The cluster options
+    * @returns Whether or not the creation was successful
     */
    create(options: ClusterOptions): boolean {
       try {
@@ -162,9 +157,10 @@ export default class Cluster {
 
    /**
     * Destroys the cluster, removes it's files and deletes it's images
-    * @returns {Promise<boolean>} Whether the destroying of the cluster was successful
+    * @param shouldPreserveFiles whether or not to delete the cluster files (default: true)
+    * @returns Whether the destroying of the cluster was successful
     */
-   async destroy(): Promise<boolean> {
+   async destroy(shouldPreserveFiles = true): Promise<boolean> {
       try {
          // Take down the cluster container and delete it
          await down({
@@ -172,14 +168,16 @@ export default class Cluster {
             cwd: this.path
          });
 
-         // Delete it's folder
-         rmSync(this.path, {
-            force: true,
-            recursive: true
-         });
+         if (!shouldPreserveFiles) {
+            // Delete it's folder
+            rmSync(this.path, {
+               force: true,
+               recursive: true
+            });
 
-         // Set it's options to null
-         this.options = undefined;
+            // Set it's options to null
+            this.options = undefined;
+         }
 
          return true;
       } catch {
@@ -189,7 +187,7 @@ export default class Cluster {
 
    /**
     * Returns all the options from the cluster
-    * @returns {ClusterOptions | null} The clusters information
+    * @returns The clusters information
     */
    dumpInfo(): ClusterOptions | undefined {
       return this.options;
@@ -200,12 +198,12 @@ export default class Cluster {
     * @returns {boolean} Whether ot not the clusters exists
     */
    exists(): boolean {
-      return this.options !== null;
+      return this.options !== undefined;
    }
 
    /**
     * Checks whether or not all the containers in a cluster is running
-    * @returns {Promise<boolean>} Whether or not the cluster is running
+    * @returns Whether or not the cluster is running
     */
    async isUp(): Promise<boolean> {
       const clusterInformation = await ps({ cwd: this.path });
@@ -233,7 +231,7 @@ export default class Cluster {
 
    /**
     * Starts up the cluster
-    * @returns {Promise<IDockerComposeResult>} The async start
+    * @returns The async start
     */
    async start(): Promise<IDockerComposeResult> {
       return upAll({ cwd: this.path });
@@ -241,7 +239,7 @@ export default class Cluster {
 
    /**
     * Stop the cluster
-    * @returns {Promise<IDockerComposeResult>} The async stop
+    * @returns The async stop
     */
    async stop(): Promise<IDockerComposeResult> {
       return stop({ cwd: this.path });

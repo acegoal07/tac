@@ -66,7 +66,7 @@ export default class ClusterStart extends Command {
                ) +
                   ux.colorize(
                      'yellow',
-                     'Some nodes might still be starting so might not be accessible straight away\n'
+                     '\nSome nodes might still be starting so might not be accessible straight away\n'
                   )
             );
          })
