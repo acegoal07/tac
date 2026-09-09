@@ -50,7 +50,6 @@ export default class ClusterRestart extends Command {
 
       // Stopping the cluster
       ux.action.start(`Stopping ${cluster.name}`);
-
       await cluster
          .stop()
          .then(() => {
@@ -61,7 +60,6 @@ export default class ClusterRestart extends Command {
             console.error(
                ux.colorize('red', '\nAn error occurred while initialising the cluster\n')
             );
-
             throw error;
          });
 
@@ -87,7 +85,6 @@ export default class ClusterRestart extends Command {
          .catch((error: unknown) => {
             ux.action.stop(ux.colorize('red', 'Failed'));
             console.error(ux.colorize('red', '\nAn error occurred while starting the cluster\n'));
-
             throw error;
          });
    }

@@ -17,8 +17,7 @@ export default class DestroyAll extends Command {
 
       if (!(await dockerUp())) {
          ux.action.stop(ux.colorize('red', 'Down'));
-         console.log(ux.colorize('red', '\nDocker needs to be running\n'));
-         return;
+         throw new Error(ux.colorize('red', '\nDocker needs to be running\n'));
       }
 
       ux.action.stop(ux.colorize('green', 'Running'));
@@ -28,11 +27,8 @@ export default class DestroyAll extends Command {
 
       // Check to see if the cluster dir exists
       if (!existsSync(clustersDir)) {
-         console.log(ux.colorize('yellow', '\nNo clusters exists\n'));
-         return;
+         throw new Error(ux.colorize('yellow', '\nNo clusters exists\n'));
       }
-
-      ux.action.start('Removing clusters');
 
       // Read the clusters dir and filter out non folders
       const clusters = readdirSync(clustersDir)
@@ -41,6 +37,7 @@ export default class DestroyAll extends Command {
          .map((cluster) => path.basename(cluster));
 
       // Handle deleting the containers and removing their files
+      ux.action.start('Removing clusters');
       await Promise.all(
          clusters.map(async (name) => {
             await new Cluster(name).destroy();

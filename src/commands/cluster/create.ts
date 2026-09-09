@@ -55,8 +55,7 @@ export default class ClusterCreate extends Command {
 
       // Check if the cluster already exists
       if (cluster.exists()) {
-         console.log('\nA cluster with that name already exists try again.\n');
-         return;
+         throw new Error(ux.colorize('red', '\nA cluster with that name already exists.\n'));
       }
 
       // Create spinner
@@ -95,7 +94,7 @@ export default class ClusterCreate extends Command {
          );
       } else {
          ux.action.stop(ux.colorize('red', 'Failed'));
-         console.log(ux.colorize('red', '\nFailed to create a cluster\n'));
+         throw new Error(ux.colorize('red', '\nFailed to create a cluster\n'));
       }
    }
 }

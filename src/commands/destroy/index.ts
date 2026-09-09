@@ -19,8 +19,7 @@ export default class DestroyIndex extends Command {
 
       if (!(await dockerUp())) {
          ux.action.stop(ux.colorize('red', 'Down'));
-         console.log(ux.colorize('red', '\nDocker needs to be running\n'));
-         return;
+         throw new Error(ux.colorize('red', '\nDocker needs to be running\n'));
       }
 
       ux.action.stop(ux.colorize('green', 'Running'));
@@ -30,20 +29,17 @@ export default class DestroyIndex extends Command {
 
       // Check that the cluster exits
       if (!cluster.exists()) {
-         console.log(ux.colorize('yellow', `\n${cluster.name} isn't a cluster that exists.\n`));
-         return;
+         throw new Error(ux.colorize('yellow', `\n${cluster.name} isn't a cluster that exists.\n`));
       }
-
-      // Create spinner
-      ux.action.start(`Destroying ${cluster.name} and it's files`);
 
       // Destroy and delete cluster
+      ux.action.start(`Destroying ${cluster.name} and it's files`);
       if (await cluster.destroy()) {
          ux.action.stop(ux.colorize('green', 'Successful'));
+         console.log(`\nSuccessfully destroyed ${cluster.name}\n`);
       } else {
          ux.action.stop(ux.colorize('red', 'Failed'));
+         throw new Error(`\nFailed to destroy ${cluster.name}\n`);
       }
-
-      console.log();
    }
 }

@@ -47,7 +47,6 @@ export default class ClusterStop extends Command {
 
       // Stop the cluster
       ux.action.start(`Stopping ${cluster.name}`);
-
       await cluster
          .stop()
          .then(() => {
@@ -59,7 +58,6 @@ export default class ClusterStop extends Command {
             console.error(
                ux.colorize('red', '\nAn error occurred while initialising the cluster\n')
             );
-
             throw error;
          });
    }

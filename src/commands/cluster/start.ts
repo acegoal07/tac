@@ -58,7 +58,6 @@ export default class ClusterStart extends Command {
 
       // Start cluster
       ux.action.start(`Starting ${cluster.name}`);
-
       await cluster
          .start()
          .then(async () => {
@@ -79,7 +78,6 @@ export default class ClusterStart extends Command {
          .catch((error: unknown) => {
             ux.action.stop(ux.colorize('red', 'Failed'));
             console.error(ux.colorize('red', '\nAn error occurred while starting the cluster\n'));
-
             throw error;
          });
    }

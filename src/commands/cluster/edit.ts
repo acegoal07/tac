@@ -96,10 +96,8 @@ export default class ClusterEdit extends Command {
          return;
       }
 
-      // Create spinner
-      ux.action.start('Clearing old cluster information');
-
       // Destroys the cluster
+      ux.action.start('Clearing old cluster information');
       if (await cluster.destroy()) {
          ux.action.stop(ux.colorize('green', 'Successful'));
       } else {
