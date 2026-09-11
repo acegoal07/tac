@@ -71,7 +71,7 @@ export default class ClusterEdit extends Command {
          throw new Error(ux.colorize('red', 'Failed to retrieve cluster information'));
       }
 
-      // merge new data with old
+      // Merge new data with old
       const updates = Object.fromEntries(
          Object.entries(flags).filter(([, value]) => value !== undefined)
       ) as Partial<Omit<ClusterOptions, 'name'>>;
@@ -82,7 +82,7 @@ export default class ClusterEdit extends Command {
          ...updates
       };
 
-      // destroy old cluster if data changed
+      // Destroy old cluster if data changed
       const isChanged = (Object.keys(clusterData) as Array<keyof ClusterOptions>).some(
          (key) => clusterData[key] !== updatedCluster[key]
       );

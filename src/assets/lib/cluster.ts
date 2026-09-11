@@ -222,7 +222,7 @@ export default class Cluster {
          return (
             (JSON.parse(
                readFileSync(path.join(this.path, 'info.json'), 'utf8')
-            ) as ClusterOptions) ?? null
+            ) as ClusterOptions) ?? undefined
          );
       } catch {
          return undefined;
