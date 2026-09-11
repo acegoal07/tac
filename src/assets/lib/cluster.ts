@@ -206,11 +206,15 @@ export default class Cluster {
     * @returns Whether or not the cluster is running
     */
    async isUp(): Promise<boolean> {
-      const clusterInformation = await ps({ cwd: this.path });
+      try {
+         const clusterInformation = await ps({ cwd: this.path });
 
-      return clusterInformation.data.services.some(
-         (service) => service.state.toLowerCase() !== 'up'
-      );
+         return clusterInformation.data.services.some(
+            (service) => service.state.toLowerCase() !== 'up'
+         );
+      } catch {
+         return false;
+      }
    }
 
    /**
