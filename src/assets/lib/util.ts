@@ -39,10 +39,8 @@ export function createKeyPair(
  * @returns Whether or not docker is running
  */
 export async function dockerUp(): Promise<boolean> {
-   const docker = new Dockerode();
-
    try {
-      await docker.ping();
+      await new Dockerode().ping();
       return true;
    } catch {
       return false;
