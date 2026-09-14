@@ -1,6 +1,6 @@
 {
    "name": "@acegoal07/tac",
-   "version": "0.0.21",
+   "version": "0.0.22",
    "description": "A CLI tool for creating, accessing and managing docker based clusters",
    "author": "acegoal07",
    "license": "MIT",
@@ -48,7 +48,7 @@
       "eslint-config-oclif": "^7.1.7",
       "eslint-config-prettier": "^10",
       "eslint-plugin-unused-imports": "^4.4.1",
-      "oclif": "^5.0.0",
+      "oclif": "^6.0.0",
       "prettier": "^3",
       "shx": "^0.4.0",
       "typescript": "^5"
