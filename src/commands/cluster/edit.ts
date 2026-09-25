@@ -13,7 +13,7 @@ export default class ClusterEdit extends Command {
       cpus: Flags.integer({
          char: 'c',
          description: 'How many CPUs to give each node',
-         max: 10,
+         max: 4,
          min: 1
       }),
       database: Flags.boolean({
@@ -33,7 +33,7 @@ export default class ClusterEdit extends Command {
       nodes: Flags.integer({
          char: 'k',
          description: 'How many nodes to give to the cluster',
-         max: 10,
+         max: 5,
          min: 1
       }),
       port: Flags.integer({

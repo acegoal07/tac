@@ -7,9 +7,9 @@ export default class ClusterCreate extends Command {
    static override readonly flags = {
       cpus: Flags.integer({
          char: 'c',
-         default: 4,
+         default: 2,
          description: 'How many CPUs to give each node',
-         max: 10,
+         max: 4,
          min: 1
       }),
       database: Flags.boolean({
@@ -38,7 +38,7 @@ export default class ClusterCreate extends Command {
          char: 'k',
          default: 1,
          description: 'How many nodes to give to the cluster',
-         max: 10,
+         max: 5,
          min: 1
       }),
       port: Flags.integer({
