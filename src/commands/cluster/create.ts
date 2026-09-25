@@ -9,6 +9,7 @@ export default class ClusterCreate extends Command {
          char: 'c',
          default: 4,
          description: 'How many CPUs to give each node',
+         max: 10,
          min: 1
       }),
       database: Flags.boolean({
@@ -20,6 +21,7 @@ export default class ClusterCreate extends Command {
          char: 'm',
          default: 1024,
          description: 'How much memory will be given to the cluster',
+         max: 4096,
          min: 1024
       }),
       module: Flags.string({
@@ -36,6 +38,7 @@ export default class ClusterCreate extends Command {
          char: 'k',
          default: 1,
          description: 'How many nodes to give to the cluster',
+         max: 10,
          min: 1
       }),
       port: Flags.integer({
